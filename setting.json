@@ -1,0 +1,20 @@
+{
+  "title": "",
+  "version": "1.0.0",
+  "canvas": {
+    "width": 2000,
+    "height": 2000
+  },
+  "judgeLine": {
+    "a": 500
+  },
+  "display": {
+    "circleRadius": 1000,
+    "frameRate": 60,
+    "backgroundColor": 220
+  },
+  "note": {
+    "speed": 25,
+    "initialPosition": 1500
+  }
+}
