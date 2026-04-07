@@ -6,15 +6,19 @@
     "height": 2000
   },
   "judgeLine": {
-    "a": 500
+    "a": 800
   },
   "display": {
-    "circleRadius": 1000,
+    "circleRadius": 2000,
     "frameRate": 60,
     "backgroundColor": 220
   },
   "note": {
-    "speed": 25,
-    "initialPosition": 1500
+    "speed": 30,
+    "initialPosition": 2000,
+    "arcWidthValue" : 25
+  },
+  "drag": {
+    "density ": 30
   }
 }
