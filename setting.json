@@ -5,20 +5,30 @@
     "width": 2000,
     "height": 2000
   },
-  "judgeLine": {
-    "a": 800
-  },
   "display": {
-    "circleRadius": 2000,
     "frameRate": 60,
-    "backgroundColor": 220
+    "backgroundColor": [220, 220, 220]
   },
   "note": {
-    "speed": 30,
-    "initialPosition": 2000,
-    "arcWidthValue" : 25
+    "arcWidthValue": 10,
+    "noteStrokeWeight": 20,
+    "judgeAllowAngle": 5,
+    "strokeColor": [255, 255, 255]
   },
   "drag": {
-    "density ": 30
+    "noteStrokeWeight": 20,
+    "density": 10,
+    "strokeColor": [255, 255, 255]
+  },
+  "rotate": {
+    "noteStrokeWeight": 20,
+    "strokeColorClockwise": [255, 0, 0],
+    "strokeColorCounterClockwise": [0, 0, 255]
+  },
+  "universalNoteSettings": {
+    "speed": 20,
+    "initialPosition": 2000,
+    "judgeLine": 700,
+    "lifeLine": 500
   }
 }

@@ -1,14 +1,15 @@
 class drag{
-    constructor(triggerTimeStart, noteLandStart, triggerTimeEnd, noteLandEnd, direction, noteConfig = {}) {
+    constructor(triggerTimeStart, noteLandStart, triggerTimeEnd, noteLandEnd, direction) {
         this.triggerTimeStart = triggerTimeStart;
         this.noteLandStart = noteLandStart;
         this.triggerTimeEnd = triggerTimeEnd;
         this.noteLandEnd = noteLandEnd;
         this.direction = direction;
-        this.noteSpeed = noteConfig.speed;
-        this.startPosition = noteConfig.initialPosition;
-        this.endPosition = CONFIG.judgeLine.a;
-        this.density = 10;
+        this.noteSpeed = CONFIG.universalNoteSettings.speed;
+        this.startPosition = CONFIG.universalNoteSettings.initialPosition;
+        this.endPosition = CONFIG.universalNoteSettings.lifeLine;
+        this.noteStrokeWeight = CONFIG.drag.noteStrokeWeight;
+        this.density = CONFIG.drag.density;
     }
 
     display(time) {
@@ -43,13 +44,16 @@ class drag{
             if (everyNotePosition < this.endPosition || everyNotePosition >= this.startPosition) continue;
 
 
-            const arcWidth = TWO_PI / CONFIG.note.arcWidthValue;
-            const dynamicArcWidth = arcWidth * CONFIG.note.initialPosition / everyNotePosition;
-
+            const arcWidth = TWO_PI / CONFIG.note.arcWidthValue;  // 基礎弧寬
             const centerAngle = everyDragLand * (TWO_PI / 32);
-            const startAngle = centerAngle - dynamicArcWidth / 2;
-            const endAngle = centerAngle + dynamicArcWidth / 2;
+            const startAngle = centerAngle - arcWidth / 2;
+            const endAngle = centerAngle + arcWidth / 2;
+
+            push();
+            stroke(...CONFIG.drag.strokeColor);
+            strokeWeight(this.noteStrokeWeight);
             arc(width / 2, height / 2, everyNotePosition, everyNotePosition, startAngle, endAngle);
+            pop();
         }
     }
 }
