@@ -1,10 +1,11 @@
+// 載入資料==========================================================
 function preload() {
   table = loadTable('data/base.csv', 'csv');   //載入csv檔案
   CONFIG = loadJSON('setting.json');   //載入設定檔案
 }
 
 
-
+// 讀取CSV資料==========================================================
 function getCSVData() {
   if (!table) { return []; }
   
@@ -36,10 +37,33 @@ function getCSVData() {
   return data;
 }
 
-function getCSP32Data() {
 
 
+// Websocket setup==========================================================
+let socket; 
+let sensorObj = { yaw: 0 }; // 預設資料結構
 
-
-
+function websocketSetup() {
+  socket = new WebSocket(CONFIG.websocket.serverAddress);
+  
+  socket.onopen = () => {
+    console.log("連線成功！");
+  };
+  
+  // 讀取訊息的核心：onmessage
+  socket.onmessage = (event) => {
+    // 讀取從 server.js 廣播過來的內容
+    // 將收到的 JSON 字串轉成 JS 物件
+    try {
+      sensorObj = JSON.parse(event.data);
+      angle = sensorObj.yaw; // 更新 angle 變量
+      console.log("解析後的資料:", sensorObj, "角度:", angle);
+    } catch (e) {
+      console.log("收到非 JSON 格式的消息:", event.data);
+    }
+  };
+  
+  socket.onerror = (err) => console.log("Socket Error:", err);
+  socket.onclose = () => console.log("WebSocket 連線已關閉");
 }
+

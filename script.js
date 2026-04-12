@@ -13,6 +13,7 @@ let angle = 0; // 用來存放玩家當前的角度
 function setup() {
   createCanvas(CONFIG.canvas.width, CONFIG.canvas.height);
   CSVData = getCSVData();
+  websocketSetup();
   
   for (let i = 0; i < CSVData.length; i++) {
     const row = CSVData[i];

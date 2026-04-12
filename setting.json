@@ -30,5 +30,8 @@
     "initialPosition": 2000,
     "judgeLine": 700,
     "lifeLine": 500
+  },
+  "websocket": {
+    "serverAddress": "ws://172.20.10.2:8080"
   }
 }

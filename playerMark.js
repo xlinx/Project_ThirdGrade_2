@@ -6,7 +6,6 @@ function playerMark() {
     stroke(0);
     noFill();
 
-    angle = map(mouseX, 0, width, 0, 360);  // 角度制
     rotate(radians(angle));  // 转换为弧度
 
     const arcWidth = TWO_PI / CONFIG.note.arcWidthValue;
