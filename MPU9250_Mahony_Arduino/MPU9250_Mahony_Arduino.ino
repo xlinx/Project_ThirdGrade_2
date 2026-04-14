@@ -10,8 +10,6 @@
 
 const char* ssid = "Reservation"; 
 const char* password = "0487878787";
-
-// ==================== WebSocket 設置 ====================
 const char* websocket_server = "ws://172.20.10.2:8080";
 
 using namespace websockets;
@@ -53,8 +51,6 @@ void deltaTUpdate();
 void getMpuData();  
 void websocketPublish();  
 void connectStatus();  
-void onWiFiEvent(WiFiEvent_t event);  
-void onWebsocketEvent(WebsocketsEvent event, String data);  
 void calibrateGyro();  
 void calibrateMag();  
 
@@ -71,12 +67,11 @@ void setup() {
   while(!Serial);
 
   // ==================== WiFi 初始化 ====================
-  WiFi.onEvent(onWiFiEvent);  // 註冊事件回調函數，使能夠在 WiFi 連線狀態改變時得到通知
+  WiFi.onEvent(onWiFiEvent);  // 註冊 WiFi 事件處理函式
   WiFi.begin(ssid, password);
   Serial.println("WiFi connecting...");
 
   // ==================== WebSocket 初始化 ====================
-  webClient.onEvent(onWebsocketEvent);
   Serial.println("WebSocket Client initialized. Waiting for WiFi connection...");
   
   // ==================== MPU9250 初始化 ====================
@@ -125,53 +120,58 @@ void loop() {
 
 }
 
-// ==================== 連線狀態管理函數 ====================
-void connectStatus() {
-  // 1 檢查 WiFi
-  if (WiFi.status() != WL_CONNECTED) {
-    websocketConnected = false; // WiFi 斷了，WebSocket 肯定也斷了
-    return;
+void onWiFiEvent(WiFiEvent_t event) {
+  if (event == SYSTEM_EVENT_STA_GOT_IP) {
+    Serial.println("[WiFi] Connected");
+    wifiConnected = true;
+  } else if (event == SYSTEM_EVENT_STA_DISCONNECTED) {
+    Serial.println("[WiFi] Disconnected");
+    wifiConnected = false;
+    webClient.close();
   }
+}
 
-  // 2 檢查 WebSocket
-  if (!webClient.available()) {  // 如果 WebSocket 連線不可用
-
-    // websocketConnected = 讓 webClient 各連線功能只執行一次的鎖
-    if (websocketConnected) {         // 如果連線狀態為 true
-      Serial.println("\n WebSocket Lost ");   // 代表剛剛才斷線
-      websocketConnected = false;
+void connectStatus() {
+  static bool lastWiFiState = false;
+  bool currentWiFiState = (WiFi.status() == WL_CONNECTED);
+  
+  // WiFi 狀態變化：未連 -> 已連
+  if (currentWiFiState && !lastWiFiState) {
+    lastWiFiState = true;
+    wifiConnected = true;
+    status = 0;  // 觸發重新校準
+    calibrationDone = false;
+    Serial.print("[WiFi] Connected! IP: ");
+    Serial.println(WiFi.localIP());
+  }
+  // WiFi 狀態變化：已連 -> 未連
+  else if (!currentWiFiState && lastWiFiState) {
+    lastWiFiState = false;
+    wifiConnected = false;
+    webClient.close();
+    Serial.println("[WiFi] Disconnected");
+  }
+  
+  // WiFi 未連接時，定時主動重連
+  if (!wifiConnected) {
+    if (millis() - lastWiFiRetry > 3000) {
+      lastWiFiRetry = millis();
+      Serial.println("[WiFi] Attempting to reconnect...");
+      WiFi.begin(ssid, password);  // 主動重連
     }
-
-    // 3 定時嘗試重連
+    return;  // 未連接時停止執行後續邏輯
+  }
+  
+  // WiFi 已連接，檢查 WebSocket
+  if (webClient.available()) {
+    webClient.poll();
+  } else {
     if (millis() - lastWebSocketRetry > 5000) {
       lastWebSocketRetry = millis();
-      Serial.println("[Action] Attempting WebSocket reconnection...");
-
-      if (webClient.connect(websocket_server)) {    // 如果重連成功
-        Serial.println("=== WebSocket Reconnected ===");
-        websocketConnected = true;
-        
-        // 重連成功後的初始化動作
-        webClient.send("{\"status\":\"ESP32 Ready!\"}");
-
-        // 重置校準狀態，確保回來後重新開始
-        status = 0;
-        calibrationDone = false; 
-        lastStatus = -1;
-      } else {
-        Serial.println("[Error] WebSocket Reconnect failed, will try again later.");
+      if (webClient.connect(websocket_server)) {
+        Serial.println("[WS] Connected");
       }
     }
-  } 
-  else {
-    if (!websocketConnected) {
-      // 從斷線狀態恢復的那一刻
-      Serial.println("\n=== WebSocket Successfully Connected ===");
-      websocketConnected = true;
-    }
-    
-    // 必須定期執行，否則連線會逾時斷開
-    webClient.poll(); 
   }
 }
 
@@ -228,34 +228,6 @@ void websocketPublish() {
         }
         webClient.poll();
     }
-}
-
-// ==================== WebSocket 事件回調函數 ====================
-void onWebsocketEvent(WebsocketsEvent event, String data) {
-    if(event == WebsocketsEvent::ConnectionOpened) {
-        Serial.println("WebSocket Connnection opened");
-    } else if(event == WebsocketsEvent::ConnectionClosed) {
-        Serial.println("WebSocket Connnection closed");
-    }
-}
-
-// ==================== WiFi 事件回調函數 ====================
-void onWiFiEvent(WiFiEvent_t event) {
-  switch(event) {
-
-    case SYSTEM_EVENT_STA_DISCONNECTED:  //工作站與路由器斷線
-      Serial.println("\n WiFi Lost!");
-      wifiConnected = false;
-      break;
-
-    case SYSTEM_EVENT_STA_GOT_IP:     //工作站已成功從路由器取得 IP 位址
-      Serial.println("\n WiFi Connected! (Event)");
-      wifiConnected = true;
-      break;
-
-    default:
-      break;
-  }
 }
 
 // ==================== 計算時間增量 (deltaT) ====================
@@ -430,7 +402,17 @@ void calibrateGyro() {
   Serial.println("校準陀螺儀中，請保持感測器靜止...");
   float sumX = 0, sumY = 0, sumZ = 0;
   int samples = 500;
+  unsigned long lastPoll = millis();
+  
   for(int i = 0; i < samples; i++) {
+    // 定期 poll WebSocket，防止連線斷開
+    if (millis() - lastPoll > 100) {
+      if (webClient.available()) {
+        webClient.poll();
+      }
+      lastPoll = millis();
+    }
+    
     if (mySensor.gyroUpdate() == 0) {
       sumX += mySensor.gyroX();
       sumY += mySensor.gyroY();
@@ -467,8 +449,17 @@ void calibrateMag() {
   
   unsigned long startTime = millis();
   int calibrationTime = 10000;  // 10 秒校準時間
+  unsigned long lastPoll = millis();
   
   while (millis() - startTime < calibrationTime) {
+    // 定期 poll WebSocket，防止連線斷開
+    if (millis() - lastPoll > 100) {
+      if (webClient.available()) {
+        webClient.poll();
+      }
+      lastPoll = millis();
+    }
+    
     if (mySensor.magUpdate() == 0) {
       float rawX = mySensor.magX();
       float rawY = mySensor.magY();
