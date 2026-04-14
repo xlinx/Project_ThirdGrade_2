@@ -25,8 +25,6 @@ class note {
     }else if(this.notePosition <= CONFIG.universalNoteSettings.lifeLine) {
       this.isActive = false;
     }
-
-    // if(this.isActive && )
   }
 
     display() {
