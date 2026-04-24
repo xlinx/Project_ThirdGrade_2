@@ -56,10 +56,10 @@ class note {
       }
 
       //miss不受角度干擾
-      if (this.notePosition < CONFIG.universalNoteSettings.judgeLine - CONFIG.universalNoteSettings.lifeRange) {
+      if (this.notePosition <= CONFIG.universalNoteSettings.lifeLine) {
         this.judgeStyle = 3; 
       }
-      else if (this.notePosition < CONFIG.universalNoteSettings.judgeRange + CONFIG.universalNoteSettings.lifeLine)
+      else if (this.notePosition < CONFIG.universalNoteSettings.judgeLine + CONFIG.universalNoteSettings.judgeRange)
       {
         if(Math.abs(this.getNoteAngleDiff()) <= CONFIG.universalNoteSettings.prefectRange) {
           this.judgeStyle = 1; 

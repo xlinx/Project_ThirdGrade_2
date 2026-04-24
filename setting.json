@@ -29,9 +29,8 @@
     "speed": 20,
     "initialPosition": 2000,
     "judgeLine": 700,
-    "lifeLine": 500,
-    "lifeRange":100,
-    "judgeRange": 500,
+    "judgeRange":100,
+    "lifeLine": 600,
     "prefectRange": 5,
     "greatRange": 10
   },
