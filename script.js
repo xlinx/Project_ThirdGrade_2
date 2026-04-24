@@ -40,7 +40,8 @@ function draw() {
   fill(0);
   text(time ,100 ,200);
   textSize(50);
-  text(angle ,100 ,400);
+  text(angleCount_360() ,100 ,400);
+
 
   noFill();
   stroke(100);

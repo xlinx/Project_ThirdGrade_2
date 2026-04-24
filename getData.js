@@ -57,7 +57,7 @@ function websocketSetup() {
     try {
       sensorObj = JSON.parse(event.data);
       angle = sensorObj.yaw; // 更新 angle 變量
-      console.log("解析後的資料:", sensorObj, "角度:", angle);
+      // console.log("解析後的資料:", sensorObj, "角度:", angle);
     } catch (e) {
       console.log("收到非 JSON 格式的消息:", event.data);
     }
@@ -65,5 +65,24 @@ function websocketSetup() {
   
   socket.onerror = (err) => console.log("Socket Error:", err);
   socket.onclose = () => console.log("WebSocket 連線已關閉");
+}
+
+
+let lastAngle = 0;
+let totalAngle = 0;
+
+function angleCount_360(){
+  let delta = angle - lastAngle;
+
+   if (delta > 180) {
+    delta -= 360;
+  } else if (delta < -180) {
+    delta += 360;
+  }
+
+  totalAngle += delta;
+  lastAngle = angle;
+
+  return totalAngle;
 }
 

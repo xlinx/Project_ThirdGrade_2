@@ -29,7 +29,11 @@
     "speed": 20,
     "initialPosition": 2000,
     "judgeLine": 700,
-    "lifeLine": 500
+    "lifeLine": 500,
+    "lifeRange":100,
+    "judgeRange": 500,
+    "prefectRange": 5,
+    "greatRange": 10
   },
   "websocket": {
     "serverAddress": "ws://172.20.10.2:8080"

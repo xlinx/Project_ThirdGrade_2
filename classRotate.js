@@ -6,6 +6,7 @@ class Rotate {
         this.notePosition = CONFIG.universalNoteSettings.initialPosition;
         this.noteStrokeWeight = CONFIG.rotate.noteStrokeWeight;
         this.isActive = false;
+        
     }
 
     update(time) {
