@@ -6,6 +6,8 @@ let CSVData = [];
 let Notes = []; // 用來存放所有音符的陣列
 let Drags = []; // 用來存放所有拖曳音符的陣列
 let Rotates = []; // 用來存放所有旋轉音符的陣列
+let song; // 用來存放音樂檔案的變數
+let isplaying = false; // 用來追蹤音樂是否正在播放的變數
 
 let angle = 0; // 用來存放玩家當前的角度
 
@@ -27,6 +29,8 @@ function setup() {
       Rotates.push(new Rotate(row.triggerTime, row.direction));
     }
   }
+
+   
 }
 
 
@@ -34,7 +38,11 @@ function setup() {
 function draw() {
   background(...CONFIG.display.backgroundColor);
   frameRate(CONFIG.display.frameRate);
+
   let time = millis();  
+   if (song.isPlaying()) {
+    time = song.currentTime() * 1000;
+  }
 
   textSize(30);
   fill(0);
@@ -72,3 +80,10 @@ function draw() {
 }
 
 
+function keyPressed() {
+  // 按任意鍵開始播放
+  if (!isplaying && song) {
+    song.play();
+    isplaying = true;
+  }
+}

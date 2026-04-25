@@ -64,8 +64,12 @@ class drag{
                 let playerAngleDeg = ((angleCount_360() % 360) + 360) % 360;
                 
                 let angleDiff = Math.abs(playerAngleDeg - noteAngleDeg);
-                // (選用) 修正 0 度與 360 度跨越的最短差距：angleDiff = Math.min(angleDiff, 360 - angleDiff);
 
+                // 修正 0 度與 360 度跨越的最短差距
+                if (angleDiff > 180) {
+                angleDiff = 360 - angleDiff;
+                }
+                
                 if (angleDiff <= CONFIG.uslNoteSetting.prefectRange) {
                     this.judgeStyle[i] = 1;
                     this.isJudged[i] = true;

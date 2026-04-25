@@ -38,6 +38,8 @@
     "greatRange": 10
   },
   "score": {
+    "textSize": 32,
+    "textColor": [0, 0, 0],
     "prefect": 0,
     "great": 0,
     "miss": 0,

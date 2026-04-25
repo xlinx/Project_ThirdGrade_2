@@ -1,4 +1,11 @@
-rotate,2000,1
-rotate,3000,1
-rotate,8000,1
-rotate,11000,1
+note,2462,10
+note,4308,12
+note,6154,14
+note,8000,16
+rotate,8923,1
+rotate,9269,0
+rotate,9615,1
+note,9846,18
+note,10308,24
+note,10769,30
+drag,11231,11692,30,20,-1

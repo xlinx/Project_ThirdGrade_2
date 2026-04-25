@@ -1,8 +1,8 @@
 function scoreDisplay(){
     push();
-    fill(0);
-    textSize(30);
-    
+    fill(...CONFIG.score.textColor);
+    textSize(CONFIG.score.textSize);
+
     CONFIG.score.scoreTotal = CONFIG.score.prefect + CONFIG.score.great;
 
 
@@ -11,6 +11,7 @@ function scoreDisplay(){
     text("Perfect: " + CONFIG.score.prefect, 500, 200);
     text("Great: " + CONFIG.score.great, 500, 250);
     text("Miss: " + CONFIG.score.miss, 500, 300);
+    text("total: " + CONFIG.score.scoreTotal, 500, 350);
     
     pop();
 }
