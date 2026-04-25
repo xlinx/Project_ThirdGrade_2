@@ -23,9 +23,12 @@
   "rotate": {
     "noteStrokeWeight": 20,
     "strokeColorClockwise": [255, 0, 0],
-    "strokeColorCounterClockwise": [0, 0, 255]
+    "strokeColorCounterClockwise": [0, 0, 255],
+    "prefectRange": 100,
+    "greatRange": 150,
+    "judgeNeedAngle": 20
   },
-  "universalNoteSettings": {
+  "uslNoteSetting": {
     "speed": 20,
     "initialPosition": 2000,
     "judgeLine": 700,

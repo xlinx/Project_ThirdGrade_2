@@ -9,14 +9,14 @@ server.on("connection" ,(ws) => {   //監聽連接事件，當有客戶端連接
     ws.send("Welcome to the WebSocket server!");   //向連接的客戶端發送歡迎消息
 
     ws.on("message", (message) => {   //監聽消息事件，當有消息從客戶端發送過來時執行回調函式，message是收到的消息
-        // 1. 解析收到的資料 (Buffer 轉 String)
+        
         const data = message.toString();
         console.log(`Received yaw: ${data}`);
 
-        // 2. 廣播格式：將資料轉發給所有連線的客戶端 
+       
         server.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(data); // 這裡發送出去的資料會被 p5.js 的 onmessage 接收
+                client.send(data); 
             }
         });
     });

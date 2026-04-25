@@ -45,10 +45,10 @@ function draw() {
 
   noFill();
   stroke(100);
-  circle(width / 2, height / 2, CONFIG.universalNoteSettings.lifeLine);   //音符生命線
+  circle(width / 2, height / 2, CONFIG.uslNoteSetting.lifeLine);   //音符生命線
   stroke(0);
-  circle(width / 2, height / 2, CONFIG.universalNoteSettings.judgeLine);  //判定線
-  circle(width / 2, height / 2, CONFIG.universalNoteSettings.initialPosition); //顯示用的最大圓
+  circle(width / 2, height / 2, CONFIG.uslNoteSetting.judgeLine);  //判定線
+  circle(width / 2, height / 2, CONFIG.uslNoteSetting.initialPosition); //顯示用的最大圓
 
   for (let i = 0; i < Notes.length; i++) {
     Notes[i].update(time);

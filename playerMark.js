@@ -15,7 +15,7 @@ function playerMark() {
 
 
 
-    arc(0, 0, CONFIG.universalNoteSettings.judgeLine, CONFIG.universalNoteSettings.judgeLine, startAngle, endAngle);
+    arc(0, 0, CONFIG.uslNoteSetting.judgeLine, CONFIG.uslNoteSetting.judgeLine, startAngle, endAngle);
 
     pop();
 }
