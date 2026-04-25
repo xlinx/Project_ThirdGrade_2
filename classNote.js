@@ -68,17 +68,20 @@ class note {
       case 1:
          this.isJudged = true;
          this.isActive = false;
-         console.log("Perfect!");
+         CONFIG.score.combo++;
+         CONFIG.score.prefect++;
         break;
       case 2:
          this.isJudged = true;
          this.isActive = false;
-         console.log("Good!");
+         CONFIG.score.combo++;
+         CONFIG.score.great++;
         break;
       case 3:
          this.isJudged = true;
          this.isActive = false;
-         console.log("Miss!");
+        CONFIG.score.miss++;
+         CONFIG.score.combo = 0; // 重置連擊數
         break;
     }
     }

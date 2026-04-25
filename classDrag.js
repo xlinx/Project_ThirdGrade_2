@@ -80,17 +80,20 @@ class drag{
                 case 1:
                     this.isJudged[i] = true;
                     this.isActive[i] = false;
-                    console.log("Perfect!");
+                    CONFIG.score.combo++;
+                    CONFIG.score.prefect++;
                     break;
                 case 2:
                     this.isJudged[i] = true;
                     this.isActive[i] = false;
-                    console.log("Good!");
+                    CONFIG.score.combo++;
+                    CONFIG.score.great++;
                     break;
                 case 3:
                     this.isJudged[i] = true;
                     this.isActive[i] = false;
-                    console.log("Miss!");
+                    CONFIG.score.miss++;
+                    CONFIG.score.combo = 0; // 重置連擊數
                     break;
                 }
 

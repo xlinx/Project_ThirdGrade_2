@@ -37,6 +37,13 @@
     "prefectRange": 5,
     "greatRange": 10
   },
+  "score": {
+    "prefect": 0,
+    "great": 0,
+    "miss": 0,
+    "combo": 0,
+    "scoreTotal": 0
+  },
   "websocket": {
     "serverAddress": "ws://172.20.10.2:8080"
   }

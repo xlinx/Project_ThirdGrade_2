@@ -50,6 +50,8 @@ function draw() {
   circle(width / 2, height / 2, CONFIG.uslNoteSetting.judgeLine);  //判定線
   circle(width / 2, height / 2, CONFIG.uslNoteSetting.initialPosition); //顯示用的最大圓
 
+  scoreDisplay(); // 顯示分數
+
   for (let i = 0; i < Notes.length; i++) {
     Notes[i].update(time);
     Notes[i].display();
