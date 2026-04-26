@@ -3,8 +3,7 @@ function scoreDisplay(){
     fill(...CONFIG.score.textColor);
     textSize(CONFIG.score.textSize);
 
-    CONFIG.score.scoreTotal = CONFIG.score.prefect + CONFIG.score.great;
-    let total = CONFIG.score.prefect + CONFIG.score.great + CONFIG.score.miss;
+    CONFIG.score.scoreTotal = CONFIG.score.prefect + CONFIG.score.great + CONFIG.score.miss;
 
     // 三種判定比例
     let perfectP = total > 0 ? (CONFIG.score.prefect / total) * 100 : 0;

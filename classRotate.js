@@ -122,32 +122,32 @@ class Rotate {
 
 
 
-let timeGap = 20;  //每20毫秒檢查一次
-let timeNow = 0;
-let angleNow = 0;
-let isTimeCheck = false;
+// 改用陣列記錄過去一小段時間的角度，避免多個 Rotate 音符彼此干擾 timeNow
+let angleHistory = [];
 
 function getRotateJdgeAngle(time) {
+  // 將當下時間與總角度存入歷史紀錄
+  angleHistory.push({ time: time, angle: angleCount_360() });
 
-  // initialize
-  if (!isTimeCheck) {
-    timeNow = time;
-    angleNow = angleCount_360();
-    isTimeCheck = true;
-    return 0;
+  // 移除超過 100 毫秒以前的紀錄 (以 100ms 內的轉動量來判定)
+  while (angleHistory.length > 0 && time - angleHistory[0].time > 100) {
+    angleHistory.shift();
   }
 
-  // 每隔 20ms 檢查
-  if (time - timeNow >= timeGap) {
-    if (angleCount_360() - angleNow >= CONFIG.rotate.judgeNeedAngle) {
+  if (angleHistory.length > 0) {
+    let oldest = angleHistory[0];
+    let latest = angleHistory[angleHistory.length - 1];
+    let diff = latest.angle - oldest.angle;
+
+    // 若 100ms 內角度變化(diff) >= 需要的角度，視為持續順時針轉
+    if (diff >= CONFIG.rotate.judgeNeedAngle) {
       return 1;
-    }else if (angleNow - angleCount_360() <= -CONFIG.rotate.judgeNeedAngle) {
-      return 2;
     } 
-
-     timeNow = time;
-    angleNow = angleCount_360();
-
+    // 若 100ms 內角度變化(diff) <= 負的需要的角度，視為持續逆時針轉
+    else if (diff <= -CONFIG.rotate.judgeNeedAngle) {
+      return 2;
+    }
   }
+
   return 0;
 }
