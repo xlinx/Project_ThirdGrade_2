@@ -1,4 +1,5 @@
 
+let firstLineInt;
 
 // 載入資料==========================================================
 function preload() {
@@ -12,26 +13,31 @@ function preload() {
 function getCSVData() {
   if (!table) { return []; }
   
+  // 讀取第一行的整數數字
+  firstLineInt = table.getNum(0, 0);
+  console.log("First line integer:", firstLineInt);
+
   let data = [];
   let rowCount = table.getRowCount();
   
-  for (let i = 0; i < rowCount; i++) {
+  // 從第二行開始讀取資料 (i = 1)
+  for (let i = 1; i < rowCount; i++) {
     let type = table.getString(i, 0);  // 第一欄：類型
     
     if(type === 'note') {
-      let triggerTime = table.getNum(i, 1);   
+      let triggerTime = table.getNum(i, 1)+firstLineInt;  // 加上第一行的整數數字
       let noteLand = table.getNum(i, 2);  
       data.push({ type, triggerTime, noteLand });
     } 
     else if(type === 'drag') {
-      let triggerTimeStart = table.getNum(i, 1);
-      let triggerTimeEnd = table.getNum(i, 2);
+      let triggerTimeStart = table.getNum(i, 1)+firstLineInt;  // 加上第一行的整數數字
+      let triggerTimeEnd = table.getNum(i, 2)+firstLineInt;  // 加上第一行的整數數字
       let noteLandStart = table.getNum(i, 3);
       let noteLandEnd = table.getNum(i, 4);
       let direction = table.getNum(i, 5);  // 方向
       data.push({ type, triggerTimeStart, triggerTimeEnd, noteLandStart, noteLandEnd, direction });
     }else if(type === 'rotate') { 
-      let triggerTime = table.getNum(i, 1);
+      let triggerTime = table.getNum(i, 1)+firstLineInt;  // 加上第一行的整數數字
       let direction = table.getNum(i, 2);  // 方向
       data.push({ type, triggerTime, direction });
     }

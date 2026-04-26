@@ -29,7 +29,7 @@
     "judgeNeedAngle": 20
   },
   "uslNoteSetting": {
-    "speed": 20,
+    "speed": 30,
     "initialPosition": 2000,
     "judgeLine": 700,
     "judgeRange":100,

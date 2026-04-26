@@ -13,21 +13,25 @@ class note {
 
   update(time) {
 
+    // 計算到達 lifeLine 所需的時間（毫秒）
+    const requiredMs = (CONFIG.uslNoteSetting.initialPosition - CONFIG.uslNoteSetting.lifeLine) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
     
+    // 計算從音符應該開始移動的時間點到現在，經過了多少毫秒
+    const elapsedMs = time - (this.triggerTime - requiredMs);
 
-    // 當前時間 到 判定時間 的剩餘毫秒數
-    const remainingMs = this.triggerTime - time;
-    // 當下音符到達終點所需的毫秒數
-    const requiredMs = (this.notePosition - CONFIG.uslNoteSetting.lifeLine) / this.noteSpeed * (1000 / CONFIG.display.frameRate);  //幀數 × 每幀時間 = 總時間(ms)
-    
-    //當音符需要的時間 >= 剩餘時間時啟動，使其在 triggerTime 時到達終點
-    if(remainingMs <= requiredMs && !this.isActive) {
+    if (elapsedMs < 0) {
+      // 還沒到啟動時間
+      this.isActive = false;
+      this.notePosition = CONFIG.uslNoteSetting.initialPosition;
+    } else {
+      // 已經啟動，根據經過的時間計算精確位置 (Frame-Independent)
       this.isActive = true;
+      const elapsedFrames = elapsedMs / (1000 / CONFIG.display.frameRate);
+      this.notePosition = CONFIG.uslNoteSetting.initialPosition - this.noteSpeed * elapsedFrames;
     }
-    //音符活動時持續移動
-    if(this.isActive && this.notePosition > CONFIG.uslNoteSetting.lifeLine) {
-      this.notePosition -= this.noteSpeed;
-    }else if(this.notePosition <= CONFIG.uslNoteSetting.lifeLine) {
+
+    // 如果超出了螢幕 (小於 lifeLine)，則停止活動
+    if (this.notePosition <= CONFIG.uslNoteSetting.lifeLine) {
       this.isActive = false;
     }
 

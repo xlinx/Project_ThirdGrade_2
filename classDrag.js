@@ -20,20 +20,24 @@ class drag{
     display(time) {
     // 每個細分音符之間的平均毫秒數
     const averageMs = (this.triggerTimeEnd - this.triggerTimeStart) / this.density; 
-    // 決定順逆時針
-    const dir = this.direction === 1 ? 1 : -1;    
+    // 計算拖曳總角度距離（含順逆時針修正）
+    let diff = this.noteLandEnd - this.noteLandStart;
+    if (this.direction === 1) { // 順時針
+      if (diff < 0) diff += 32;
+    } else { // 逆時針
+      if (diff > 0) diff -= 32;
+    }
     // 每個細分音符之間的平均角度差
-    let averageAng = (this.noteLandEnd - this.noteLandStart) / this.density * dir; 
+    let averageAng = diff / this.density; 
+
     // 從當前時間到結束時間的剩餘毫秒數
     const remainingMs = this.triggerTimeEnd - time;
-    // 從 startPosition 走到 judgePosition 需要的時間（毫秒）
+    // 從 startPosition 走到 lifeLine 需要的時間（毫秒）
     const requiredMs = (this.startPosition - this.endPosition) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
 
   
         for (let i = 0; i <= this.density; i++) {
-
-             if (this.isJudged[i]) continue; // 已經判定過的細分音符就跳過
-             
+        
             // 計算每個細分音符的觸發時間
             const everyDragTriggerTime = this.triggerTimeStart + averageMs * i;
             // 計算每個細分音符的落點角度
@@ -51,6 +55,7 @@ class drag{
                 everyNotePosition = this.startPosition - this.noteSpeed * elapsedFrames;
             }
 
+            if(!this.isJudged[i]) {
 
             // 如果超過生命線 (miss)不受角度干擾
             if (everyNotePosition <= this.endPosition) {
@@ -59,15 +64,15 @@ class drag{
             } 
             // 進入判定區間 (judgeLine + judgeRange)
             else if (everyNotePosition < CONFIG.uslNoteSetting.judgeLine + CONFIG.uslNoteSetting.judgeRange) {
-                // 計算角度差異
-                let noteAngleDeg = degrees(everyDragLand * (TWO_PI / 32));
+                // 計算角度差異，並安全轉換為 0~360
+                let noteAngleDeg = ((degrees(everyDragLand * (TWO_PI / 32)) % 360) + 360) % 360;
                 let playerAngleDeg = ((angleCount_360() % 360) + 360) % 360;
                 
                 let angleDiff = Math.abs(playerAngleDeg - noteAngleDeg);
 
                 // 修正 0 度與 360 度跨越的最短差距
                 if (angleDiff > 180) {
-                angleDiff = 360 - angleDiff;
+                    angleDiff = 360 - angleDiff;
                 }
                 
                 if (angleDiff <= CONFIG.uslNoteSetting.prefectRange) {
@@ -100,9 +105,12 @@ class drag{
                     CONFIG.score.combo = 0; // 重置連擊數
                     break;
                 }
+            }
+                
 
 
-            // 在有效範圍內才繪製
+            // 在有效範圍內且未被判定才繪製
+            if (this.isJudged[i]) continue;
             if (everyNotePosition < this.endPosition || everyNotePosition >= this.startPosition) continue;
 
 

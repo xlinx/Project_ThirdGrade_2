@@ -60,6 +60,7 @@ function draw() {
 
   scoreDisplay(); // 顯示分數
 
+  if(song.isPlaying()) {
   for (let i = 0; i < Notes.length; i++) {
     Notes[i].update(time);
     Notes[i].display();
@@ -76,7 +77,7 @@ function draw() {
   }
 
   playerMark();
-
+}
 }
 
 
