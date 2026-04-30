@@ -11,12 +11,10 @@
   },
   "note": {
     "arcWidthValue": 10,
-    "noteStrokeWeight": 20,
     "judgeAllowAngle": 5,
     "strokeColor": [255, 255, 255]
   },
   "drag": {
-    "noteStrokeWeight": 20,
     "density": 10,
     "strokeColor": [255, 255, 255]
   },
@@ -26,9 +24,10 @@
     "strokeColorCounterClockwise": [0, 0, 255],
     "prefectRange": 100,
     "greatRange": 150,
-    "judgeNeedAngle": 20
+    "judgeNeedAngle": 10
   },
   "uslNoteSetting": {
+    "noteStrokeWeight": 5,
     "speed": 10,
     "initialPosition":1080,
     "judgeLine": 600,
@@ -48,7 +47,7 @@
   },
   "judgeText": {
     "textSize": 300,
-    "hitColor": [0,0,0],
+    "hitColor": [255,255,255],
     "missColor": [255, 69, 0],
     "duration": 700
   },

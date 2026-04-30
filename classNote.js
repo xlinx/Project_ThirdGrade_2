@@ -4,7 +4,7 @@ class note {
     this.noteLand = noteLand;
     this.noteSpeed = CONFIG.uslNoteSetting.speed;
     this.notePosition = CONFIG.uslNoteSetting.initialPosition;
-    this.noteStrokeWeight = CONFIG.note.noteStrokeWeight;
+    this.noteStrokeWeight = CONFIG.uslNoteSetting.noteStrokeWeight;
     this.isActive = false;  //是否已啟動
     this.judgeAllowAngle = CONFIG.note.judgeAllowAngle;  // 判定允許的角度範圍(一半)
     this.judgeStyle = 0;  // 0: 未判定, 1: Perfect, 2: Good, 3: Miss  
