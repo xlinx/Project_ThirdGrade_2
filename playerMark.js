@@ -3,7 +3,7 @@ function playerMark() {
     translate(width / 2, height / 2);
 
     strokeWeight(10);
-    stroke(0);
+    stroke(252, 175, 23);
     noFill();
 
     rotate(radians(angle));  // 转换为弧度

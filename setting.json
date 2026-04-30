@@ -2,12 +2,12 @@
   "title": "",
   "version": "1.0.0",
   "canvas": {
-    "width": 2000,
-    "height": 2000
+    "width": 1580,
+    "height": 1080
   },
   "display": {
     "frameRate": 60,
-    "backgroundColor": [220, 220, 220]
+    "backgroundColor": [0, 0, 0]
   },
   "note": {
     "arcWidthValue": 10,
@@ -21,7 +21,7 @@
     "strokeColor": [255, 255, 255]
   },
   "rotate": {
-    "noteStrokeWeight": 20,
+    "noteStrokeWeight": 5,
     "strokeColorClockwise": [255, 0, 0],
     "strokeColorCounterClockwise": [0, 0, 255],
     "prefectRange": 100,
@@ -29,24 +29,30 @@
     "judgeNeedAngle": 20
   },
   "uslNoteSetting": {
-    "speed": 30,
-    "initialPosition": 2000,
-    "judgeLine": 700,
-    "judgeRange":100,
-    "lifeLine": 600,
-    "prefectRange": 5,
-    "greatRange": 10
+    "speed": 10,
+    "initialPosition":1080,
+    "judgeLine": 600,
+    "judgeRange":70,
+    "lifeLine": 530,
+    "prefectRange": 10,
+    "greatRange": 17
   },
   "score": {
     "textSize": 32,
-    "textColor": [0, 0, 0],
+    "textColor": [255, 255, 255],
     "prefect": 0,
     "great": 0,
     "miss": 0,
     "combo": 0,
     "scoreTotal": 0
   },
+  "judgeText": {
+    "textSize": 300,
+    "hitColor": [0,0,0],
+    "missColor": [255, 69, 0],
+    "duration": 700
+  },
   "websocket": {
-    "serverAddress": "ws://172.20.10.2:8080"
+    "serverAddress": "ws://10.254.20.173:8080"
   }
 }

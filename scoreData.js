@@ -4,7 +4,7 @@ function scoreDisplay(){
     textSize(CONFIG.score.textSize);
 
     CONFIG.score.scoreTotal = CONFIG.score.prefect + CONFIG.score.great + CONFIG.score.miss;
-
+    let total = CONFIG.score.scoreTotal;
     // 三種判定比例
     let perfectP = total > 0 ? (CONFIG.score.prefect / total) * 100 : 0;
     let goodP    = total > 0 ? (CONFIG.score.great / total) * 100 : 0;

@@ -6,10 +6,13 @@ let CSVData = [];
 let Notes = []; // 用來存放所有音符的陣列
 let Drags = []; // 用來存放所有拖曳音符的陣列
 let Rotates = []; // 用來存放所有旋轉音符的陣列
-let song; // 用來存放音樂檔案的變數
 let isplaying = false; // 用來追蹤音樂是否正在播放的變數
 
 let angle = 0; // 用來存放玩家當前的角度
+
+// 判定文字顯示系統
+let JudgeTexts = []; // 存儲所有正在顯示的判定文字
+
 
 
 function setup() {
@@ -52,13 +55,24 @@ function draw() {
 
 
   noFill();
-  stroke(100);
+  stroke(50);
   circle(width / 2, height / 2, CONFIG.uslNoteSetting.lifeLine);   //音符生命線
-  stroke(0);
+  strokeWeight(5);
+  stroke(20);
   circle(width / 2, height / 2, CONFIG.uslNoteSetting.judgeLine);  //判定線
+  stroke(50);
   circle(width / 2, height / 2, CONFIG.uslNoteSetting.initialPosition); //顯示用的最大圓
 
   scoreDisplay(); // 顯示分數
+
+  // 更新和顯示判定文字
+  for (let i = JudgeTexts.length - 1; i >= 0; i--) {
+    if (!JudgeTexts[i].update()) {
+      JudgeTexts.splice(i, 1); // 移除已過期的文字
+    } else {
+      JudgeTexts[i].display();
+    }
+  }
 
   if(song.isPlaying()) {
   for (let i = 0; i < Notes.length; i++) {

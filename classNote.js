@@ -74,18 +74,23 @@ class note {
          this.isActive = false;
          CONFIG.score.combo++;
          CONFIG.score.prefect++;
+         hit.play();
+         addJudgeText(1); 
         break;
       case 2:
          this.isJudged = true;
          this.isActive = false;
          CONFIG.score.combo++;
          CONFIG.score.great++;
+         hit.play();
+         addJudgeText(2); 
         break;
       case 3:
          this.isJudged = true;
          this.isActive = false;
         CONFIG.score.miss++;
          CONFIG.score.combo = 0; // 重置連擊數
+         addJudgeText(3); 
         break;
     }
     }

@@ -91,18 +91,23 @@ class drag{
                     this.isActive[i] = false;
                     CONFIG.score.combo++;
                     CONFIG.score.prefect++;
+                    addJudgeText(1);
+                    hit.play();
                     break;
                 case 2:
                     this.isJudged[i] = true;
                     this.isActive[i] = false;
                     CONFIG.score.combo++;
                     CONFIG.score.great++;
+                    addJudgeText(2);
+                    hit.play();
                     break;
                 case 3:
                     this.isJudged[i] = true;
                     this.isActive[i] = false;
                     CONFIG.score.miss++;
                     CONFIG.score.combo = 0; // 重置連擊數
+                    addJudgeText(3);
                     break;
                 }
             }

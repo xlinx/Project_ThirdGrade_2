@@ -1,11 +1,14 @@
-
 let firstLineInt;
+let song; // 用來存放音樂檔案的變數
+let hit;
 
 // 載入資料==========================================================
 function preload() {
   table = loadTable('data/base.csv', 'csv');   //載入csv檔案
   CONFIG = loadJSON('setting.json');   //載入設定檔案
   song = loadSound('data/base.mp3'); // 載入音樂檔案
+  hit = loadSound('data/hit.mp3'); // 載入打擊檔案
+
 }
 
 
@@ -65,7 +68,7 @@ function websocketSetup() {
     // 將收到的 JSON 字串轉成 JS 物件
     try {
       sensorObj = JSON.parse(event.data);
-      angle = sensorObj.yaw; // 更新 angle 變量
+      angle = -sensorObj.yaw; // 更新 angle 變量
       // console.log("解析後的資料:", sensorObj, "角度:", angle);
     } catch (e) {
       console.log("收到非 JSON 格式的消息:", event.data);
