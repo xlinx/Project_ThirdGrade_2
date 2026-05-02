@@ -50,8 +50,9 @@ class JudgeText {
 
 // 添加判定文字到顯示列表
 function addJudgeText(judgeType) {
-  // 清除所有之前的判定圓圈，只保留最新的
-  JudgeTexts = [];
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const offsetY = 100;
   
   JudgeTexts.push(new JudgeText(judgeType));
 }

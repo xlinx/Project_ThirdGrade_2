@@ -8,7 +8,7 @@ class drag{
         this.noteSpeed = CONFIG.uslNoteSetting.speed;
         this.startPosition = CONFIG.uslNoteSetting.initialPosition;
         this.endPosition = CONFIG.uslNoteSetting.lifeLine;
-        this.noteStrokeWeight = CONFIG.uslNoteSetting.noteStrokeWeight;
+        this.noteStrokeWeight = CONFIG.drag.noteStrokeWeight;
         this.density = CONFIG.drag.density;  
 
         // 【新增】陣列來紀錄每一個 density 區段的判定狀態
