@@ -13,6 +13,8 @@ let angle = 0; // 用來存放玩家當前的角度
 // 判定文字顯示系統
 let JudgeTexts = []; // 存儲所有正在顯示的判定文字
 
+let status = 0; 
+
 
 
 function setup() {
@@ -47,51 +49,65 @@ function draw() {
     time = song.currentTime() * 1000;
   }
 
-  textSize(30);
-  fill(0);
-  text(time ,100 ,200);
-  textSize(50);
-  text(angleCount_360() ,100 ,400);
+
+  if(status == 0){
+    startLogic();
+  }
+
+  if(status == 1){
+    songSelectMenu();
+    song.stop();
+    isplaying = false;
+  }
+
+  if(status == 2){
+
+      textSize(30);
+      fill(0);
+      text(time ,100 ,200);
+      textSize(50);
+      text(angleCount_360() ,100 ,400);
 
 
-  noFill();
-  stroke(50);
-  circle(width / 2, height / 2, CONFIG.uslNoteSetting.lifeLine);   //音符生命線
-  strokeWeight(5);
-  stroke(20);
-  circle(width / 2, height / 2, CONFIG.uslNoteSetting.judgeLine);  //判定線
-  stroke(50);
-  circle(width / 2, height / 2, CONFIG.uslNoteSetting.initialPosition); //顯示用的最大圓
+      noFill();
+      stroke(50);
+      circle(width / 2, height / 2, CONFIG.uslNoteSetting.lifeLine);   //音符生命線
+      strokeWeight(5);
+      stroke(20);
+      circle(width / 2, height / 2, CONFIG.uslNoteSetting.judgeLine);  //判定線
+      stroke(50);
+      circle(width / 2, height / 2, CONFIG.uslNoteSetting.initialPosition); //顯示用的最大圓
 
-  scoreDisplay(); // 顯示分數
+      scoreDisplay(); // 顯示分數
 
-  // 更新和顯示判定文字
-  for (let i = JudgeTexts.length - 1; i >= 0; i--) {
-    if (!JudgeTexts[i].update()) {
-      JudgeTexts.splice(i, 1); // 移除已過期的文字
-    } else {
-      JudgeTexts[i].display();
+      // 更新和顯示判定文字
+      for (let i = JudgeTexts.length - 1; i >= 0; i--) {
+        if (!JudgeTexts[i].update()) {
+          JudgeTexts.splice(i, 1); // 移除已過期的文字
+        } else {
+          JudgeTexts[i].display();
+        }
+      }
+
+      if(song.isPlaying()) {
+      for (let i = 0; i < Notes.length; i++) {
+        Notes[i].update(time);
+        Notes[i].display();
+      }
+
+      // 更新和顯示 drag 音符
+      for (let i = 0; i < Drags.length; i++) {
+        Drags[i].display(time);  // 傳遞 time
+      }
+
+      for (let i = 0; i < Rotates.length; i++) {
+        Rotates[i].update(time);
+        Rotates[i].display();
+      }
+
+      playerMark();
     }
   }
-
-  if(song.isPlaying()) {
-  for (let i = 0; i < Notes.length; i++) {
-    Notes[i].update(time);
-    Notes[i].display();
-  }
-
-  // 更新和顯示 drag 音符
-  for (let i = 0; i < Drags.length; i++) {
-    Drags[i].display(time);  // 傳遞 time
-  }
-
-  for (let i = 0; i < Rotates.length; i++) {
-    Rotates[i].update(time);
-    Rotates[i].display();
-  }
-
-  playerMark();
-}
 }
 
 
@@ -100,5 +116,15 @@ function keyPressed() {
   if (!isplaying && song) {
     song.play();
     isplaying = true;
+  }
+
+  if (key === 'a' || key === 'A') {
+    status = 0;
+  }
+  if (key === 's' || key === 'S') {
+    status = 1;
+  }
+  if (key === 'd' || key === 'D') {
+    status = 2;
   }
 }

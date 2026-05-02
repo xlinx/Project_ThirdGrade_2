@@ -48,11 +48,15 @@ class JudgeText {
   }
 }
 
-// 添加判定文字到顯示列表
+// 添加判定
 function addJudgeText(judgeType) {
   const centerX = width / 2;
   const centerY = height / 2;
   const offsetY = 100;
   
+  // 清空上一個音符的判定顯示，只顯示當前判定
+  JudgeTexts = [];
+  
+  // 添加新判定
   JudgeTexts.push(new JudgeText(judgeType));
 }

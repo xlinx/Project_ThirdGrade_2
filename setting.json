@@ -48,7 +48,7 @@
   },
   "judgeText": {
     "textSize": 300,
-    "hitColor": [0,0,0],
+    "hitColor": [255,255,255],
     "missColor": [255, 69, 0],
     "duration": 700
   },
