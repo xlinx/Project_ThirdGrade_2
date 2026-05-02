@@ -8,9 +8,9 @@
 #define SCL_PIN 22
 #endif
 
-const char* ssid = "RESERVATION"; 
+const char* ssid = "Reservation"; 
 const char* password = "0487878787";
-const char* websocket_server = "ws://10.254.20.173:8080";
+const char* websocket_server = "ws://172.20.10.2:8080";
 
 using namespace websockets;
 WebsocketsClient webClient;

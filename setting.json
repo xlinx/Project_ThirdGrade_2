@@ -53,6 +53,6 @@
     "duration": 700
   },
   "websocket": {
-    "serverAddress": "ws://10.254.20.173:8080"
+    "serverAddress": "ws://172.20.10.2:8080"
   }
 }

@@ -4,9 +4,9 @@ let hit;
 
 // 載入資料==========================================================
 function preload() {
-  table = loadTable('data/base.csv', 'csv');   //載入csv檔案
+  table = loadTable('data/jojo/base.csv', 'csv');   //載入csv檔案
   CONFIG = loadJSON('setting.json');   //載入設定檔案
-  song = loadSound('data/base.mp3'); // 載入音樂檔案
+  song = loadSound('data/jojo/base.mp3'); // 載入音樂檔案
   hit = loadSound('data/hit.mp3'); // 載入打擊檔案
 
 }
