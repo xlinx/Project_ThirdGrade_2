@@ -89,13 +89,13 @@ connection.connect(err => {
   // ===== SQL（重點🔥）=====
   const sql = `
   INSERT INTO baseTable
-  (name, song_artist, sheet_artist, level, bpm, mp3, csv, jpg)
+  (name, song_artist, sheet_artist, bpm, level, mp3, csv, jpg)
   VALUES ?
   ON DUPLICATE KEY UPDATE
     song_artist = VALUES(song_artist),
     sheet_artist = VALUES(sheet_artist),
-    level = VALUES(level),
     bpm = VALUES(bpm),
+    level = VALUES(level),
     mp3 = VALUES(mp3),
     csv = VALUES(csv),
     jpg = VALUES(jpg)
