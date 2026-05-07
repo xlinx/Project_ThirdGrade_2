@@ -31,7 +31,8 @@ function startLogic(){
 
     pop();
 
-    if (displayAngle >= 364) {
-    status = 1;
-}
+    // 改為檢查累積角度是否達到 365
+    if (accumulatedAngle >= 365) {
+        status = 1;
+    }
 }

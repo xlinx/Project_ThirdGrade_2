@@ -86,7 +86,7 @@ connection.connect(err => {
     return;
   }
 
-  // ===== SQL（重點🔥）=====
+  // ===== SQL 傳輸 =====
   const sql = `
   INSERT INTO baseTable
   (name, song_artist, sheet_artist, bpm, level, mp3, csv, jpg)

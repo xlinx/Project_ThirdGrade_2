@@ -52,6 +52,14 @@
     "missColor": [255, 69, 0],
     "duration": 700
   },
+  "songSelectMenu": {
+    "songQuantity": 12,
+    "songbuttonWidth": 150,
+    "songbuttonHeight": 150,
+    "buttonColor": [0, 0, 255],
+    "textSize": 24,
+    "textColor": [255, 255, 255]
+  },
   "websocket": {
     "serverAddress": "ws://172.20.10.2:8080"
   }

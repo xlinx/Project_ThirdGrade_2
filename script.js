@@ -14,6 +14,7 @@ let angle = 0; // 用來存放玩家當前的角度
 let JudgeTexts = []; // 存儲所有正在顯示的判定文字
 
 let status = 0; 
+let isSandMySQL = false; // 用來追蹤是否已經向伺服器請求過 MySQL 資料
 
 
 
@@ -55,9 +56,16 @@ function draw() {
   }
 
   if(status == 1){
-    songSelectMenu();
+    songSelectMenu(CONFIG.songSelectMenu.songQuantity);
     song.stop();
     isplaying = false;
+
+    // 只有在切換到 1 的時候，發送一次請求給伺服器
+    if (socket && socket.readyState === WebSocket.OPEN && !isSandMySQL) {
+      socket.send(JSON.stringify({ action: "get_mysql_data" }));
+      console.log("已請求 MySQL 資料");
+      isSandMySQL = true;
+    }
   }
 
   if(status == 2){
