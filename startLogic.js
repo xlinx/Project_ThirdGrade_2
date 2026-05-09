@@ -1,6 +1,5 @@
 function startLogic(){
 
-    song.stop();
     isplaying = false;
 
     // 取得累積角度，並取絕對值保持正向累加

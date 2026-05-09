@@ -1,6 +1,13 @@
-const fs = require("fs");
-const path = require("path");
-const mysql = require("mysql2");
+// all from ai  
+
+import mysql from "mysql2"; // 或者是 "mysql"，看你安裝哪一個
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // ===== DB =====
 const connection = mysql.createConnection({

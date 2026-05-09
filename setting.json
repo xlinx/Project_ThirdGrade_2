@@ -53,6 +53,7 @@
     "duration": 700
   },
   "songSelectMenu": {
+    "songPage": 0,
     "songQuantity": 12,
     "songbuttonWidth": 150,
     "songbuttonHeight": 150,
@@ -61,6 +62,6 @@
     "textColor": [255, 255, 255]
   },
   "websocket": {
-    "serverAddress": "ws://172.20.10.2:8080"
+    "serverAddress": "ws://127.0.0.1:8080"
   }
 }

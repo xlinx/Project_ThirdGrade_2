@@ -3,6 +3,7 @@
 let table;      // 宣告變數table
 let CSVData = [];
 
+let songList = []; // 用來存放從 MySQL 取得的歌曲資料的陣列
 let Notes = []; // 用來存放所有音符的陣列
 let Drags = []; // 用來存放所有拖曳音符的陣列
 let Rotates = []; // 用來存放所有旋轉音符的陣列
@@ -46,9 +47,6 @@ function draw() {
   frameRate(CONFIG.display.frameRate);
 
   let time = millis();  
-   if (song.isPlaying()) {
-    time = song.currentTime() * 1000;
-  }
 
 
   if(status == 0){
@@ -56,19 +54,32 @@ function draw() {
   }
 
   if(status == 1){
-    songSelectMenu(CONFIG.songSelectMenu.songQuantity);
-    song.stop();
+      // 只有在切換到 1 的時候，發送一次請求給伺服器
+    // if (socket && socket.readyState === WebSocket.OPEN && !isSandMySQL) {
+    //   socket.send(JSON.stringify({ action: "get_mysql_data" }));
+    //   console.log("已請求 MySQL 資料");
+    //   isSandMySQL = true;
+    // }
+
+    loadSongMenu();
+    playerMark();
+    if (songList.length > 0) {
+        for(let i = 0; i < songList.length; i++) {
+            songList[i].update();
+        }
+    }
+    drawSongMenu( CONFIG.songSelectMenu.songPage, CONFIG.songSelectMenu.songQuantity);
+    
     isplaying = false;
 
-    // 只有在切換到 1 的時候，發送一次請求給伺服器
-    if (socket && socket.readyState === WebSocket.OPEN && !isSandMySQL) {
-      socket.send(JSON.stringify({ action: "get_mysql_data" }));
-      console.log("已請求 MySQL 資料");
-      isSandMySQL = true;
-    }
+  
   }
 
   if(status == 2){
+
+     if (song.isPlaying()) {
+    time = song.currentTime() * 1000;
+  }
 
       textSize(30);
       fill(0);
@@ -119,20 +130,3 @@ function draw() {
 }
 
 
-function keyPressed() {
-  // 按任意鍵開始播放
-  if (!isplaying && song) {
-    song.play();
-    isplaying = true;
-  }
-
-  if (key === 'a' || key === 'A') {
-    status = 0;
-  }
-  if (key === 's' || key === 'S') {
-    status = 1;
-  }
-  if (key === 'd' || key === 'D') {
-    status = 2;
-  }
-}

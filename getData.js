@@ -5,8 +5,6 @@ let hit;
 // 載入資料==========================================================
 function preload() {
   CONFIG = loadJSON('setting.json');   //載入設定檔案
-  table = loadTable('data/jojo/base.csv', 'csv');   //載入csv檔案
-  song = loadSound('data/jojo/base.mp3'); // 載入音樂檔案
   hit = loadSound('data/hit.mp3'); // 載入打擊檔案
 
 }
@@ -56,10 +54,15 @@ let socket;
 let sensorObj = { yaw: 0 }; // 預設資料結構
 
 function websocketSetup() {
-  socket = new WebSocket(CONFIG.websocket.serverAddress);
+  socket = new WebSocket(CONFIG.websocket.serverAddress); 
   
   socket.onopen = () => {
     console.log("連線成功！");
+        // 連線後執行一次
+        const registerMsg = {
+            type: "Web"
+        };
+        socket.send(JSON.stringify(registerMsg));
   };
   
   // 讀取訊息的核心：onmessage
@@ -69,9 +72,9 @@ function websocketSetup() {
     try {
       sensorObj = JSON.parse(event.data);
       angle = -sensorObj.yaw; // 更新 angle 變量
-      console.log("解析後的資料:", sensorObj, "角度:", angle);
+      // console.log("解析後的資料:", sensorObj, "角度:", angle);
     } catch (e) {
-      console.log("收到非 JSON 格式的消息:", event.data);
+      // console.log("收到非 JSON 格式的消息:", event.data);
     }
   };
   
@@ -102,4 +105,37 @@ function angleCount_360(){
 
   return totalAngle;
 }
+
+let isGet = false; 
+// 抓取歌曲清單==========================================================
+async function loadSongMenu() {
+    if (isGet) return; // 已經抓取過了就不再抓取
+    try {
+        // 發送 HTTP 請求
+        const response = await fetch('http://localhost:3000/api/songs'); // 替換成你的 API 端點
+        const songs = await response.json(); // 拿到資料庫裡的陣列
+        isGet = true; // 設定已經抓取過了
+
+        // 在這裡把資料存進你的 Class 物件
+        songs.forEach(data => {
+            let newSong = new Song( data.id, 
+                                    data.name, 
+                                    data.song_artist,  
+                                    data.sheet_artist, 
+                                    data.level, 
+                                    data.bpm, 
+                                    data.mp3, 
+                                    data.csv, 
+                                    data.jpg
+                                  );
+                                  
+            songList.push(newSong);
+        });
+        
+        console.log("GetSongs success:", songList);
+    } catch (error) {
+        console.error("GetSongs error:", error);
+    }
+}
+
 
