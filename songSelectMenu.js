@@ -16,30 +16,30 @@ class Song {
     }
 
     update() {
-    
-        // 載入每首歌曲的資源
-            if (!this.isLoadJpg) {
-                this.jpg = loadImage(this.jpg);
-                this.isLoadJpg = true;
-                console.log(`已載入圖片: ${this.jpg}`);
-            }
-            if (!this.isLoadCsv) {
-                this.csv = loadTable(this.csv, "csv"); // 移除 "header"，因為譜面沒有標頭
-                this.isLoadCsv = true;
-                console.log(`已載入 CSV: ${this.csv}`);
-            }
-            if (!this.isLoadMp3) {
-                this.mp3 = loadSound(this.mp3);
-                this.isLoadMp3 = true;
-                console.log(`已載入 MP3: ${this.mp3}`);
-            }
 
+        // 載入每首歌曲的資源
+        if (!this.isLoadJpg) {
+            this.jpg = loadImage(this.jpg);
+            this.isLoadJpg = true;
+            console.log(`已載入圖片: ${this.jpg}`);
         }
+        if (!this.isLoadCsv) {
+            this.csv = loadTable(this.csv, "csv"); // 移除 "header"，因為譜面沒有標頭
+            this.isLoadCsv = true;
+            console.log(`已載入 CSV: ${this.csv}`);
+        }
+        if (!this.isLoadMp3) {
+            this.mp3 = loadSound(this.mp3);
+            this.isLoadMp3 = true;
+            console.log(`已載入 MP3: ${this.mp3}`);
+        }
+
+    }
 
 }
 
 // 在 drawSongMenu 外部定義一個變數，方便 keyPressed 使用
-let selectedSongIndex = -1; 
+let selectedSongIndex = -1;
 
 function drawSongMenu(page, quantity) {
     push();
@@ -52,7 +52,7 @@ function drawSongMenu(page, quantity) {
 
     // 將玩家角度 (假設是 angleCount) 轉換為 0 ~ TWO_PI 弧度
     // 限制在 360 度內並轉弧度
-    let playerRad = radians(angleCount_360() % 360); 
+    let playerRad = radians(angleCount_360() % 360);
     if (playerRad < 0) playerRad += TWO_PI;
 
     selectedSongIndex = -1; // 每幀重置
@@ -91,12 +91,12 @@ function drawSongMenu(page, quantity) {
         if (currentSong && currentSong.isLoadJpg) {
             imageMode(CENTER);
             image(currentSong.jpg, 0, 0, 170, 170);
-            
+
             fill(255);
             noStroke();
             textAlign(CENTER);
             textSize(16);
-            text(currentSong.name, 0, 110); 
+            text(currentSong.name, 0, 110);
         } else {
             rectMode(CENTER);
             fill(100);
@@ -108,8 +108,8 @@ function drawSongMenu(page, quantity) {
     pop();
 }
 
-function keyPressed() {
-    if ((key === ' ' || keyCode === 32) && status === 1) {
+function selectSong() {
+    if (botton === 1 && status === 1) {
         if (selectedSongIndex !== -1) {
             let targetSong = songList[selectedSongIndex];
             console.log(`準備遊玩: ${targetSong.name}`);
@@ -122,7 +122,7 @@ function keyPressed() {
                 // 如果還是字串路徑，才載入
                 table = loadTable(targetSong.csv, "csv");
             }
-            
+
             // 重新解析音符
             CSVData = getCSVData();
             Notes = [];
@@ -130,11 +130,11 @@ function keyPressed() {
             Rotates = [];
             for (let i = 0; i < CSVData.length; i++) {
                 const row = CSVData[i];
-                if(row.type === 'note') {
+                if (row.type === 'note') {
                     Notes.push(new note(row.triggerTime, row.noteLand));
-                } else if(row.type === 'drag') {
+                } else if (row.type === 'drag') {
                     Drags.push(new drag(row.triggerTimeStart, row.noteLandStart, row.triggerTimeEnd, row.noteLandEnd, row.direction));
-                } else if(row.type === 'rotate') {
+                } else if (row.type === 'rotate') {
                     Rotates.push(new Rotate(row.triggerTime, row.direction));
                 }
             }
@@ -155,21 +155,7 @@ function keyPressed() {
         }
     }
 
-           // 按任意鍵開始播放
-  if (!isplaying && song) {
-    song.play();
-    isplaying = true;
-  }
-
-  if (key === 'a' || key === 'A') {
-    status = 0;
-  }
-  if (key === 's' || key === 'S') {
-    status = 1;
-  }
-  if (key === 'd' || key === 'D') {
-    status = 2;
-  }
+   
 }
 
 // 封裝一個開始遊戲的函式
@@ -181,5 +167,34 @@ function startGame() {
     }
 }
 
- 
-    
+function keyPressed() {
+
+    if (status === 1) {
+        let maxPage = Math.ceil(songList.length / CONFIG.songSelectMenu.songQuantity) - 1;
+        if (maxPage < 0) maxPage = 0;
+        
+        if ((key === 'q' || key === 'Q')) {
+            CONFIG.songSelectMenu.songPage--;
+            if (CONFIG.songSelectMenu.songPage < 0) {
+                CONFIG.songSelectMenu.songPage = maxPage; // 循環到最後一頁
+            }
+        }
+        if ((key === 'e' || key === 'E')) {
+            CONFIG.songSelectMenu.songPage++;
+            if (CONFIG.songSelectMenu.songPage > maxPage) {
+                CONFIG.songSelectMenu.songPage = 0; // 循環到第一頁
+            }
+        }
+    }
+
+    if (key === 'a' || key === 'A') {
+        status = 0;
+    }
+    if (key === 's' || key === 'S') {
+        status = 1;
+    }
+    if (key === 'd' || key === 'D') {
+        status = 2;
+    }
+}
+

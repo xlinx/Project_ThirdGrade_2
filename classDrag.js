@@ -18,6 +18,13 @@ class drag{
     }
 
     display(time) {
+    // 從 startPosition 走到 lifeLine 需要的時間（毫秒）
+    const requiredMs = (this.startPosition - this.endPosition) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
+
+    // 【效能優化】如果時間還沒到（提早太多），或者這個拖曳音符已經結束很久（延遲太多），直接不進入高消耗的 density 迴圈運算
+    if (time < this.triggerTimeStart - requiredMs - 2000) return;
+    if (time > this.triggerTimeEnd + 2000) return;
+
     // 每個細分音符之間的平均毫秒數
     const averageMs = (this.triggerTimeEnd - this.triggerTimeStart) / this.density; 
     // 計算拖曳總角度距離（含順逆時針修正）
@@ -32,8 +39,6 @@ class drag{
 
     // 從當前時間到結束時間的剩餘毫秒數
     const remainingMs = this.triggerTimeEnd - time;
-    // 從 startPosition 走到 lifeLine 需要的時間（毫秒）
-    const requiredMs = (this.startPosition - this.endPosition) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
 
   
         for (let i = 0; i <= this.density; i++) {
@@ -92,7 +97,7 @@ class drag{
                     CONFIG.score.combo++;
                     CONFIG.score.prefect++;
                     addJudgeText(1);
-                    hit.play();
+                    playHitSound();
                     break;
                 case 2:
                     this.isJudged[i] = true;
@@ -100,7 +105,7 @@ class drag{
                     CONFIG.score.combo++;
                     CONFIG.score.great++;
                     addJudgeText(2);
-                    hit.play();
+                    playHitSound();
                     break;
                 case 3:
                     this.isJudged[i] = true;

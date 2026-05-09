@@ -1,11 +1,15 @@
 let firstLineInt;
 let song; // 用來存放音樂檔案的變數
 let hit;
+let audioCtx;
+let hitBuffer;
+
+
 
 // 載入資料==========================================================
 function preload() {
   CONFIG = loadJSON('setting.json');   //載入設定檔案
-  hit = loadSound('data/hit.mp3'); // 載入打擊檔案
+  // hit = loadSound('data/hit.mp3'); // 載入打擊檔案
 
 }
 
@@ -72,6 +76,8 @@ function websocketSetup() {
     try {
       sensorObj = JSON.parse(event.data);
       angle = -sensorObj.yaw; // 更新 angle 變量
+      botton = sensorObj.bottonstatus; // 更新 botton 變量
+      // console.log("Received data:", sensorObj, "Angle:", angle, "Botton:", botton);
       // console.log("解析後的資料:", sensorObj, "角度:", angle);
     } catch (e) {
       // console.log("收到非 JSON 格式的消息:", event.data);
@@ -139,3 +145,30 @@ async function loadSongMenu() {
 }
 
 
+
+
+
+// 1. 初始化 AudioContext 並預載入音效
+function initHitSound() {
+    audioCtx = getAudioContext();
+    // 使用 fetch 直接抓取檔案，避開 p5 載入機制
+    fetch('data/hit.mp3') 
+        .then(response => response.arrayBuffer())
+        .then(data => audioCtx.decodeAudioData(data))
+        .then(buffer => {
+            hitBuffer = buffer;
+            console.log("原生音訊緩衝區已就緒");
+        })
+        .catch(e => console.error("音訊載入失敗:", e));
+}
+
+// 2. 極輕量化的播放函式
+function playHitSound() {
+    if (!hitBuffer || !audioCtx) return;
+
+    // 每次播放只建立一個簡單的 BufferSource，播完會自動銷毀
+    let source = audioCtx.createBufferSource();
+    source.buffer = hitBuffer;
+    source.connect(audioCtx.destination);
+    source.start(0);
+}

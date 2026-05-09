@@ -54,7 +54,7 @@
   },
   "songSelectMenu": {
     "songPage": 0,
-    "songQuantity": 12,
+    "songQuantity": 8,
     "songbuttonWidth": 150,
     "songbuttonHeight": 150,
     "buttonColor": [0, 0, 255],

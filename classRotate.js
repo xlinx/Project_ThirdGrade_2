@@ -12,10 +12,14 @@ class Rotate {
     }
 
     update(time) {
+    if (this.isJudged) return; // 【效能優化】已判定完畢直接離開
 
     // 計算到達 lifeLine 所需的時間（毫秒）
     const requiredMs = (CONFIG.uslNoteSetting.initialPosition - CONFIG.uslNoteSetting.lifeLine) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
     
+    // 【效能優化】如果時間還太早（距離音符出現還有 2 秒以上），直接跳出運算
+    if (time < this.triggerTime - requiredMs - 2000) return;
+
     // 計算從音符應該開始移動的時間點到現在，經過了多少毫秒
     const elapsedMs = time - (this.triggerTime - requiredMs);
 
@@ -81,7 +85,7 @@ class Rotate {
             this.isActive = false;
             CONFIG.score.combo++;
             CONFIG.score.prefect++;
-            hit.play();
+            playHitSound();
             addJudgeText(1);
             break;
           case 2:
@@ -89,7 +93,7 @@ class Rotate {
             this.isActive = false;
             CONFIG.score.combo++;
             CONFIG.score.great++;
-            hit.play();
+            playHitSound();
             addJudgeText(2);
             break;
           case 3:
@@ -106,6 +110,11 @@ class Rotate {
   }
 
   display() {
+    if (this.isJudged) return; // 【效能優化】已判定完畢直接離開
+
+    // 【效能優化】如果時間還太早（甚至還沒開始移動、或是剛要移動且位置在發源處），跳過渲染
+    if (this.notePosition >= CONFIG.uslNoteSetting.initialPosition) return;
+
     if(this.isActive && !this.isJudged && this.notePosition >= 0) {
 
       push();
@@ -131,8 +140,10 @@ class Rotate {
 let angleHistory = [];
 
 function getRotateJdgeAngle(time) {
-  // 將當下時間與總角度存入歷史紀錄
-  angleHistory.push({ time: time, angle: angleCount_360() });
+  if (angleHistory.length === 0 || angleHistory[angleHistory.length - 1].time !== time) {
+    // 將當下時間與總角度存入歷史紀錄
+    angleHistory.push({ time: time, angle: angleCount_360() });
+  }
 
   // 移除超過 100 毫秒以前的紀錄 (以 100ms 內的轉動量來判定)
   while (angleHistory.length > 0 && time - angleHistory[0].time > 100) {

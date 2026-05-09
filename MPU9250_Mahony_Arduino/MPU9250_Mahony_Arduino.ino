@@ -11,6 +11,9 @@
 const char* ssid = "Reservation"; 
 const char* password = "0487878787";
 const char* websocket_server = "ws://172.20.10.2:8080";
+const int botton = 5; // 按鈕腳位
+bool lastState = HIGH; // 上次按鈕狀態，初始為未按下 
+int bottonStatus = 0; 
 
 using namespace websockets;
 WebsocketsClient webClient;
@@ -66,6 +69,9 @@ void setup() {
   Serial.begin(115200);
   while(!Serial);
 
+  // ==================== 按鈕初始化 ====================
+  pinMode(botton, INPUT_PULLUP); // 設定按鈕為輸
+
   // ==================== WiFi 初始化 ====================
   WiFi.onEvent(onWiFiEvent);  // 註冊 WiFi 事件處理函式
   WiFi.begin(ssid, password);
@@ -97,6 +103,18 @@ void setup() {
 //=====================================
 void loop() {
 
+  bool current = digitalRead(botton);
+  // 偵測狀態改變
+    if (current != lastState) {
+      if (current == LOW) {
+        bottonStatus = 1;
+      } else {
+        bottonStatus = 0;
+      }
+      lastState = current;   // ★ 重點：更新上次狀態
+      delay(2); // 極短去彈跳
+    }
+
   // 檢查 WiFi 和 WebSocket 連線 
   connectStatus();  
 
@@ -120,6 +138,7 @@ void loop() {
 
 }
 
+//==================== WiFi 事件處理函數 ====================
 void onWiFiEvent(WiFiEvent_t event) {
   if (event == SYSTEM_EVENT_STA_GOT_IP) {
     Serial.println("[WiFi] Connected");
@@ -131,6 +150,7 @@ void onWiFiEvent(WiFiEvent_t event) {
   }
 }
 
+// ==================== 連線狀態管理函數 ====================
 void connectStatus() {
   static bool lastWiFiState = false;
   bool currentWiFiState = (WiFi.status() == WL_CONNECTED);
@@ -219,6 +239,8 @@ void websocketPublish() {
                 StaticJsonDocument<200> doc;
                 doc["type"] = "sensor_data";
                 doc["yaw"] = yaw;
+                doc["botton"] = "bottonstatus";
+                doc["bottonstatus"] = bottonStatus;
                 String output;
                 serializeJson(doc, output);
                 webClient.send(output);

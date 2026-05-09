@@ -10,12 +10,14 @@ let Rotates = []; // 用來存放所有旋轉音符的陣列
 let isplaying = false; // 用來追蹤音樂是否正在播放的變數
 
 let angle = 0; // 用來存放玩家當前的角度
+let botton = 0; // 用來存放玩家當前的按鈕狀態
 
 // 判定文字顯示系統
 let JudgeTexts = []; // 存儲所有正在顯示的判定文字
 
 let status = 0; 
 let isSandMySQL = false; // 用來追蹤是否已經向伺服器請求過 MySQL 資料
+
 
 
 
@@ -37,6 +39,7 @@ function setup() {
     }
   }
 
+  initHitSound(); // 初始化打擊聲音池
    
 }
 
@@ -51,6 +54,9 @@ function draw() {
 
   if(status == 0){
     startLogic();
+     if(song && song.isPlaying()) {
+        song.stop();
+    }
   }
 
   if(status == 1){
@@ -60,7 +66,7 @@ function draw() {
     //   console.log("已請求 MySQL 資料");
     //   isSandMySQL = true;
     // }
-
+    selectSong();
     loadSongMenu();
     playerMark();
     if (songList.length > 0) {
@@ -72,10 +78,18 @@ function draw() {
     
     isplaying = false;
 
+    if(song && song.isPlaying()) {
+        song.stop();
+    }
   
   }
 
   if(status == 2){
+
+    if (!isplaying && song) {
+        song.play();
+        isplaying = true;
+    }
 
      if (song.isPlaying()) {
     time = song.currentTime() * 1000;
