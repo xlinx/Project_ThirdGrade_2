@@ -78,7 +78,7 @@ class note {
          this.isActive = false;
          CONFIG.score.combo++;
          CONFIG.score.prefect++;
-         playHitSound();
+         playSound('hit');
          addJudgeText(1); 
         break;
       case 2:
@@ -86,7 +86,7 @@ class note {
          this.isActive = false;
          CONFIG.score.combo++;
          CONFIG.score.great++;
-         playHitSound();
+         playSound('hit');
          addJudgeText(2); 
         break;
       case 3:

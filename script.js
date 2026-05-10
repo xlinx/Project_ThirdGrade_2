@@ -24,7 +24,9 @@ let isSandMySQL = false; // 用來追蹤是否已經向伺服器請求過 MySQL 
 function setup() {
   createCanvas(CONFIG.canvas.width, CONFIG.canvas.height);
   CSVData = getCSVData();
-  websocketSetup();
+  websocketSetup(); // 初始化 WebSocket 連線
+
+  setSounds(); // 預先載入聲音檔案
   
   for (let i = 0; i < CSVData.length; i++) {
     const row = CSVData[i];
@@ -38,9 +40,6 @@ function setup() {
       Rotates.push(new Rotate(row.triggerTime, row.direction));
     }
   }
-
-  initHitSound(); // 初始化打擊聲音池
-   
 }
 
 
@@ -111,8 +110,6 @@ function draw() {
       stroke(50);
       circle(width / 2, height / 2, CONFIG.uslNoteSetting.initialPosition); //顯示用的最大圓
 
-      scoreDisplay(); // 顯示分數
-
       // 更新和顯示判定文字
       for (let i = JudgeTexts.length - 1; i >= 0; i--) {
         if (!JudgeTexts[i].update()) {
@@ -140,6 +137,22 @@ function draw() {
 
       playerMark();
     }
+
+  }
+
+  if (song && !song.isPlaying() && status == 2){
+      status = 3;
+    }
+
+  if(status == 3){
+    settlement();
+  }
+
+  if(status !== 2 && status !== 3) {
+    CONFIG.score.combo = 0;
+        CONFIG.score.prefect = 0;
+        CONFIG.score.great = 0;
+        CONFIG.score.miss = 0;
   }
 }
 

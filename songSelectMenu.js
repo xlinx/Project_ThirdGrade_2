@@ -153,6 +153,7 @@ function selectSong() {
                 song = loadSound(targetSong.mp3, startGame);
             }
         }
+        
     }
 
    

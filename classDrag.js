@@ -97,7 +97,7 @@ class drag{
                     CONFIG.score.combo++;
                     CONFIG.score.prefect++;
                     addJudgeText(1);
-                    playHitSound();
+                    playSound('hit');
                     break;
                 case 2:
                     this.isJudged[i] = true;
@@ -105,7 +105,7 @@ class drag{
                     CONFIG.score.combo++;
                     CONFIG.score.great++;
                     addJudgeText(2);
-                    playHitSound();
+                    playSound('hit');
                     break;
                 case 3:
                     this.isJudged[i] = true;

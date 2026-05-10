@@ -1,56 +1,12 @@
 let firstLineInt;
 let song; // 用來存放音樂檔案的變數
 let hit;
-let audioCtx;
-let hitBuffer;
-
-
 
 // 載入資料==========================================================
 function preload() {
   CONFIG = loadJSON('setting.json');   //載入設定檔案
-  // hit = loadSound('data/hit.mp3'); // 載入打擊檔案
 
 }
-
-
-// 讀取CSV資料==========================================================
-function getCSVData() {
-  if (!table) { return []; }
-  
-  // 讀取第一行的整數數字
-  firstLineInt = table.getNum(0, 0);
-  console.log("First line integer:", firstLineInt);
-
-  let data = [];
-  let rowCount = table.getRowCount();
-  
-  // 從第二行開始讀取資料 (i = 1)
-  for (let i = 1; i < rowCount; i++) {
-    let type = table.getString(i, 0);  // 第一欄：類型
-    
-    if(type === 'note') {
-      let triggerTime = table.getNum(i, 1)+firstLineInt;  // 加上第一行的整數數字
-      let noteLand = table.getNum(i, 2);  
-      data.push({ type, triggerTime, noteLand });
-    } 
-    else if(type === 'drag') {
-      let triggerTimeStart = table.getNum(i, 1)+firstLineInt;  // 加上第一行的整數數字
-      let triggerTimeEnd = table.getNum(i, 2)+firstLineInt;  // 加上第一行的整數數字
-      let noteLandStart = table.getNum(i, 3);
-      let noteLandEnd = table.getNum(i, 4);
-      let direction = table.getNum(i, 5);  // 方向
-      data.push({ type, triggerTimeStart, triggerTimeEnd, noteLandStart, noteLandEnd, direction });
-    }else if(type === 'rotate') { 
-      let triggerTime = table.getNum(i, 1)+firstLineInt;  // 加上第一行的整數數字
-      let direction = table.getNum(i, 2);  // 方向
-      data.push({ type, triggerTime, direction });
-    }
-  }
-  
-  return data;
-}
-
 
 
 // Websocket setup==========================================================
@@ -77,10 +33,8 @@ function websocketSetup() {
       sensorObj = JSON.parse(event.data);
       angle = -sensorObj.yaw; // 更新 angle 變量
       botton = sensorObj.bottonstatus; // 更新 botton 變量
-      // console.log("Received data:", sensorObj, "Angle:", angle, "Botton:", botton);
-      // console.log("解析後的資料:", sensorObj, "角度:", angle);
     } catch (e) {
-      // console.log("收到非 JSON 格式的消息:", event.data);
+      console.log("收到非 JSON 格式的消息:", event.data);
     }
   };
   
@@ -145,30 +99,84 @@ async function loadSongMenu() {
 }
 
 
+// 讀取CSV資料==========================================================
+function getCSVData() {
+  if (!table) { return []; }
+  
+  // 讀取第一行的整數數字
+  firstLineInt = table.getNum(0, 0);
+  console.log("First line integer:", firstLineInt);
 
-
-
-// 1. 初始化 AudioContext 並預載入音效
-function initHitSound() {
-    audioCtx = getAudioContext();
-    // 使用 fetch 直接抓取檔案，避開 p5 載入機制
-    fetch('data/hit.mp3') 
-        .then(response => response.arrayBuffer())
-        .then(data => audioCtx.decodeAudioData(data))
-        .then(buffer => {
-            hitBuffer = buffer;
-            console.log("原生音訊緩衝區已就緒");
-        })
-        .catch(e => console.error("音訊載入失敗:", e));
+  let data = [];
+  let rowCount = table.getRowCount();
+  
+  // 從第二行開始讀取資料 (i = 1)
+  for (let i = 1; i < rowCount; i++) {
+    let type = table.getString(i, 0);  // 第一欄：類型
+    
+    if(type === 'note') {
+      let triggerTime = table.getNum(i, 1)+firstLineInt;  // 加上第一行的整數數字
+      let noteLand = table.getNum(i, 2);  
+      data.push({ type, triggerTime, noteLand });
+    } 
+    else if(type === 'drag') {
+      let triggerTimeStart = table.getNum(i, 1)+firstLineInt;  // 加上第一行的整數數字
+      let triggerTimeEnd = table.getNum(i, 2)+firstLineInt;  // 加上第一行的整數數字
+      let noteLandStart = table.getNum(i, 3);
+      let noteLandEnd = table.getNum(i, 4);
+      let direction = table.getNum(i, 5);  // 方向
+      data.push({ type, triggerTimeStart, triggerTimeEnd, noteLandStart, noteLandEnd, direction });
+    }else if(type === 'rotate') { 
+      let triggerTime = table.getNum(i, 1)+firstLineInt;  // 加上第一行的整數數字
+      let direction = table.getNum(i, 2);  // 方向
+      data.push({ type, triggerTime, direction });
+    }
+  }
+  
+  return data;
 }
 
-// 2. 極輕量化的播放函式
-function playHitSound() {
-    if (!hitBuffer || !audioCtx) return;
 
+
+let audioCtx;
+let sounds = {}; // 用來存放所有載入好的音效
+// 初始化 AudioContext 並預載入音效
+function setSounds() {
+    audioCtx = getAudioContext();  // 使用 p5.js 的 getAudioContext() 來確保兼容性
+    
+    const soundFiles = {
+        hit: 'data/hit.mp3',
+    };
+
+    initAllSounds(soundFiles);
+  }
+
+async function initAllSounds(files) {
+    try {
+        // 將所有 fetch 任務轉為 Promise 陣列
+        const promises = Object.keys(files).map(async (key) => {
+            const response = await fetch(files[key]);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+            sounds[key] = audioBuffer; // 存入物件中
+            console.log(`音效 [${key}] 載入成功`);
+        });
+
+        await Promise.all(promises);
+        console.log("所有原生音訊已就緒！");
+    } catch (e) {
+        console.error("部分音訊載入失敗:", e);
+    }
+}
+
+
+function playSound(name) {
     // 每次播放只建立一個簡單的 BufferSource，播完會自動銷毀
-    let source = audioCtx.createBufferSource();
-    source.buffer = hitBuffer;
+    if (!sounds[name] || !audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const source = audioCtx.createBufferSource();
+    source.buffer = sounds[name];
     source.connect(audioCtx.destination);
     source.start(0);
 }
