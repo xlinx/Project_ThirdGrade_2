@@ -1,3 +1,17 @@
+function pushHint() {
+    push();
+    textSize(30);
+    fill(255);
+    text("Press any Keyt", width / 2 - 100, height / 2);
+    pop();
+
+    if (keyIsPressed) {
+        status = 0;
+    }
+}
+
+
+
 function startLogic(){
 
     isplaying = false;
@@ -14,9 +28,22 @@ function startLogic(){
     // console.log(displayAngle);
 
     push();
+
+    let glow = map(sin(frameCount * 0.05), -1, 1, 0, 255);
+    fill(255, 255, 255,glow);
+    textSize(30);
+    text("Rotate to Start", width / 2 - 100, height / 2);
+
+
     noFill();
+    let starC = color(255, 255, 100); 
+    let endC = color(255, 255, 255);  
+
+    let amount = map(displayAngle, 0, 365, 0, 1);
+    let Gradient = lerpColor(starC, endC, amount);
+
     strokeWeight(20);
-    stroke(255);
+    stroke(Gradient);
 
     arc(
         width/2,

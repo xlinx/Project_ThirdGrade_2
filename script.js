@@ -1,13 +1,14 @@
 ﻿let CONFIG = {}; // 用來存放設定參數
 
 let table;      // 宣告變數table
+let img;        // 宣告變數img
 let CSVData = [];
 
 let songList = []; // 用來存放從 MySQL 取得的歌曲資料的陣列
 let Notes = []; // 用來存放所有音符的陣列
 let Drags = []; // 用來存放所有拖曳音符的陣列
 let Rotates = []; // 用來存放所有旋轉音符的陣列
-let isplaying = false; // 用來追蹤音樂是否正在播放的變數
+let isplaying = false; // 用來追蹤status是否已經變成 2
 
 let angle = 0; // 用來存放玩家當前的角度
 let botton = 0; // 用來存放玩家當前的按鈕狀態
@@ -15,7 +16,7 @@ let botton = 0; // 用來存放玩家當前的按鈕狀態
 // 判定文字顯示系統
 let JudgeTexts = []; // 存儲所有正在顯示的判定文字
 
-let status = 0; 
+let status = -1; 
 let isSandMySQL = false; // 用來追蹤是否已經向伺服器請求過 MySQL 資料
 
 
@@ -28,18 +29,6 @@ function setup() {
 
   setSounds(); // 預先載入聲音檔案
   
-  for (let i = 0; i < CSVData.length; i++) {
-    const row = CSVData[i];
-    
-    if(row.type === 'note') {
-      Notes.push(new note(row.triggerTime, row.noteLand));
-    }
-    else if(row.type === 'drag') {
-      Drags.push(new drag(row.triggerTimeStart, row.noteLandStart, row.triggerTimeEnd, row.noteLandEnd, row.direction));
-    }else if(row.type === 'rotate') {
-      Rotates.push(new Rotate(row.triggerTime, row.direction));
-    }
-  }
 }
 
 
@@ -48,25 +37,36 @@ function draw() {
   background(...CONFIG.display.backgroundColor);
   frameRate(CONFIG.display.frameRate);
 
-  let time = millis();  
+  let time = millis(); 
+push(); 
+  noFill();
+  stroke(50);
+  circle(width / 2, height / 2, CONFIG.uslNoteSetting.lifeLine);   //音符生命線
+pop();
 
+
+  if(status == -1){
+    pushHint();
+  }
 
   if(status == 0){
     startLogic();
-     if(song && song.isPlaying()) {
-        song.stop();
+     if(song && !song.paused) {
+        song.pause();
+        song.currentTime = 0;
     }
   }
 
   if(status == 1){
+    time = millis();
       // 只有在切換到 1 的時候，發送一次請求給伺服器
     // if (socket && socket.readyState === WebSocket.OPEN && !isSandMySQL) {
     //   socket.send(JSON.stringify({ action: "get_mysql_data" }));
     //   console.log("已請求 MySQL 資料");
     //   isSandMySQL = true;
     // }
-    selectSong();
     loadSongMenu();
+    selectSong();
     playerMark();
     if (songList.length > 0) {
         for(let i = 0; i < songList.length; i++) {
@@ -75,23 +75,21 @@ function draw() {
     }
     drawSongMenu( CONFIG.songSelectMenu.songPage, CONFIG.songSelectMenu.songQuantity);
     
-    isplaying = false;
-
-    if(song && song.isPlaying()) {
-        song.stop();
-    }
-  
   }
 
   if(status == 2){
+    
 
     if (!isplaying && song) {
         song.play();
+console.log("csv rows", table?.getRowCount?.());
+console.log("min trigger", Math.min(...Notes.map(n => n.triggerTime)));
+console.log("notes len", Notes.length, "drags len", Drags.length, "rotates len", Rotates.length);
         isplaying = true;
     }
 
-     if (song.isPlaying()) {
-    time = song.currentTime() * 1000;
+     if (song && !song.paused) {
+    time = song.currentTime * 1000;
   }
 
       textSize(30);
@@ -101,14 +99,14 @@ function draw() {
       text(angleCount_360() ,100 ,400);
 
 
-      noFill();
-      stroke(50);
-      circle(width / 2, height / 2, CONFIG.uslNoteSetting.lifeLine);   //音符生命線
       strokeWeight(5);
       stroke(20);
       circle(width / 2, height / 2, CONFIG.uslNoteSetting.judgeLine);  //判定線
       stroke(50);
       circle(width / 2, height / 2, CONFIG.uslNoteSetting.initialPosition); //顯示用的最大圓
+      noFill();
+      stroke(50);
+      circle(width / 2, height / 2, CONFIG.uslNoteSetting.lifeLine);   //音符生命線
 
       // 更新和顯示判定文字
       for (let i = JudgeTexts.length - 1; i >= 0; i--) {
@@ -119,7 +117,7 @@ function draw() {
         }
       }
 
-      if(song.isPlaying()) {
+      if(song && !song.paused) {
       for (let i = 0; i < Notes.length; i++) {
         Notes[i].update(time);
         Notes[i].display();
@@ -140,20 +138,28 @@ function draw() {
 
   }
 
-  if (song && !song.isPlaying() && status == 2){
+  if (song && song.paused && status == 2){
       status = 3;
     }
+
+  if(status == 2.5){
+    pause();
+    isplaying = false;
+}
 
   if(status == 3){
     settlement();
   }
 
-  if(status !== 2 && status !== 3) {
+  if(status !== 2 && status !== 3 && status !== 2.5) {
     CONFIG.score.combo = 0;
         CONFIG.score.prefect = 0;
         CONFIG.score.great = 0;
         CONFIG.score.miss = 0;
+        isplaying =false;
   }
 }
+
+
 
 

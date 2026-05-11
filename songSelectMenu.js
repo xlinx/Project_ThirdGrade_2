@@ -28,10 +28,10 @@ class Song {
             this.isLoadCsv = true;
             console.log(`已載入 CSV: ${this.csv}`);
         }
+        // MP3 路徑保持為字符串，在 selectSong() 中需要時才創建 Audio 對象
         if (!this.isLoadMp3) {
-            this.mp3 = loadSound(this.mp3);
             this.isLoadMp3 = true;
-            console.log(`已載入 MP3: ${this.mp3}`);
+            console.log(`已載入 MP3 路徑: ${this.mp3}`);
         }
 
     }
@@ -109,25 +109,23 @@ function drawSongMenu(page, quantity) {
 }
 
 function selectSong() {
-    if (botton === 1 && status === 1) {
+    if (botton === 1 && status === 1 ) {
+
         if (selectedSongIndex !== -1) {
             let targetSong = songList[selectedSongIndex];
             console.log(`準備遊玩: ${targetSong.name}`);
 
-            // --- 處理 CSV 資料 ---
-            if (targetSong.isLoadCsv && typeof targetSong.csv !== 'string') {
-                // 如果已經是 Table 物件，直接給予全域變數 table
-                table = targetSong.csv;
-            } else {
-                // 如果還是字串路徑，才載入
-                table = loadTable(targetSong.csv, "csv");
-            }
-
-            // 重新解析音符
-            CSVData = getCSVData();
+            // 確保資源都已載入
+            targetSong.update();
+            
+            // 1. 先建立音符
+            table = targetSong.csv;
+            img = targetSong.jpg;  // 設置全局圖片變數
             Notes = [];
             Drags = [];
             Rotates = [];
+            
+            CSVData = getCSVData();
             for (let i = 0; i < CSVData.length; i++) {
                 const row = CSVData[i];
                 if (row.type === 'note') {
@@ -138,35 +136,20 @@ function selectSong() {
                     Rotates.push(new Rotate(row.triggerTime, row.direction));
                 }
             }
-
-            // --- 處理音樂播放 ---
-            if (song && song.isPlaying()) {
-                song.stop();
+            
+            // 2. 改用原生 Audio（每次都創建新的 Audio 對象）
+            song = new Audio(targetSong.mp3);
+            if(!isplaying){
+            status = 2;
+            islaying = true;
             }
-
-            if (targetSong.isLoadMp3 && typeof targetSong.mp3 !== 'string') {
-                // 如果已經是 Sound 物件，直接播放
-                song = targetSong.mp3;
-                startGame();
-            } else {
-                // 如果還沒載入，現場載入並在回呼函式中開始遊戲
-                song = loadSound(targetSong.mp3, startGame);
-            }
+            
         }
-        
-    }
-
-   
-}
-
-// 封裝一個開始遊戲的函式
-function startGame() {
-    if (song) {
-        song.play();
-        status = 2; // 切換到遊戲狀態
-        console.log("遊戲開始！");
     }
 }
+
+
+
 
 function keyPressed() {
 
@@ -192,10 +175,24 @@ function keyPressed() {
         status = 0;
     }
     if (key === 's' || key === 'S') {
-        status = 1;
+        status = 1;  // 改為 0，觸發停止邏輯
+        if (song && !song.paused) {
+            song.pause();
+            song.currentTime = 0;
+        }
+        selectedSongIndex = -1;  // 清除選中的歌曲
+        console.log("stop at", song?.currentTime || "unknown", "notes len", Notes.length);
     }
     if (key === 'd' || key === 'D') {
         status = 2;
     }
+    if (key === 'p' || key === 'P') {
+        status = 2.5;
+    }
 }
+
+
+
+
+
 

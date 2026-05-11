@@ -9,17 +9,19 @@ class note {
     this.judgeAllowAngle = CONFIG.note.judgeAllowAngle;  // 判定允許的角度範圍(一半)
     this.judgeStyle = 0;  // 0: 未判定, 1: Perfect, 2: Good, 3: Miss  
     this.isJudged = false;
+
+    this.requiredMs = 0;
+    this.elapsedMs = 0;
+
+    // 預先計算從初始位置移動到生命線需要的時間
+    this.requiredMs = (this.initialPos - this.lifeLine) / this.noteSpeed * this.frameMs;
   }
 
   update(time) {
-    if (this.isJudged) return; // 【效能優化】已判定完畢直接離開
 
     // 計算到達 lifeLine 所需的時間（毫秒）
     const requiredMs = (CONFIG.uslNoteSetting.initialPosition - CONFIG.uslNoteSetting.lifeLine) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
     
-    // 【效能優化】如果時間還太早（距離音符出現還有 2 秒以上），直接跳出運算
-    if (time < this.triggerTime - requiredMs - 2000) return;
-
     // 計算從音符應該開始移動的時間點到現在，經過了多少毫秒
     const elapsedMs = time - (this.triggerTime - requiredMs);
 
@@ -103,11 +105,6 @@ class note {
   }
 
     display() {
-    if (this.isJudged) return; // 【效能優化】已判定完畢直接離開
-
-    // 【效能優化】如果時間還太早（甚至還沒開始移動、或是剛要移動且位置在發源處），且不在畫面中，跳過渲染
-    if (this.notePosition >= CONFIG.uslNoteSetting.initialPosition) return;
-
     if(this.isActive && !this.isJudged &&  this.notePosition >= 0) {
       // 初始角度寬度
       const arcWidth = TWO_PI / CONFIG.note.arcWidthValue;

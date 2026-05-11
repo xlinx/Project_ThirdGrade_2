@@ -180,3 +180,23 @@ function playSound(name) {
     source.connect(audioCtx.destination);
     source.start(0);
 }
+
+// 初始化音符==========================================================
+function initializeNotes() {
+  Notes = [];      // 清空舊的音符
+  Drags = [];      // 清空舊的拖曳
+  Rotates = [];    // 清空舊的旋轉
+  
+  for (let i = 0; i < CSVData.length; i++) {
+    const row = CSVData[i];
+    
+    if(row.type === 'note') {
+      Notes.push(new note(row.triggerTime, row.noteLand));
+    }
+    else if(row.type === 'drag') {
+      Drags.push(new drag(row.triggerTimeStart, row.noteLandStart, row.triggerTimeEnd, row.noteLandEnd, row.direction));
+    }else if(row.type === 'rotate') {
+      Rotates.push(new Rotate(row.triggerTime, row.direction));
+    }
+  }
+}

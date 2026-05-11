@@ -61,6 +61,17 @@
     "textSize": 24,
     "textColor": [255, 255, 255]
   },
+  "pause": {
+    "rotateSpeed": 0.6,
+    "imgRotateSpeed": 0.4,
+    "selectRadius": 900,
+    "selectRadiusMask": 700,
+    "selectDistance":400,
+    "radius": 300,
+    "position":200,
+    "textSize": 50,
+    "textColor": [255, 255, 255]
+  },
   "websocket": {
     "serverAddress": "ws://127.0.0.1:8080"
   }
