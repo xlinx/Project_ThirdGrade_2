@@ -1,5 +1,6 @@
 function pushHint() {
     push();
+    noStroke();
     textSize(30);
     fill(255);
     text("Press any Keyt", width / 2 - 100, height / 2);
@@ -31,6 +32,7 @@ function startLogic(){
 
     let glow = map(sin(frameCount * 0.05), -1, 1, 0, 255);
     fill(255, 255, 255,glow);
+    noStroke();
     textSize(30);
     text("Rotate to Start", width / 2 - 100, height / 2);
 

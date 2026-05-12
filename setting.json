@@ -24,8 +24,8 @@
     "noteStrokeWeight": 5,
     "strokeColorClockwise": [255, 0, 0],
     "strokeColorCounterClockwise": [0, 0, 255],
-    "prefectRange": 100,
-    "greatRange": 150,
+    "prefectRange": 70,
+    "greatRange": 110,
     "judgeNeedAngle": 20
   },
   "uslNoteSetting": {
@@ -55,8 +55,9 @@
   "songSelectMenu": {
     "songPage": 0,
     "songQuantity": 8,
-    "songbuttonWidth": 150,
-    "songbuttonHeight": 150,
+    "songbuttonWidth": 200,
+    "songbuttonHeight": 200,
+    "songListRadius": 300,
     "buttonColor": [0, 0, 255],
     "textSize": 24,
     "textColor": [255, 255, 255]
@@ -64,13 +65,30 @@
   "pause": {
     "rotateSpeed": 0.6,
     "imgRotateSpeed": 0.4,
-    "selectRadius": 900,
-    "selectRadiusMask": 700,
-    "selectDistance":400,
+    "selectRadius": 800,
+    "selectRadiusMask": 600,
+    "selectRadiusTextDeValue": 55,
     "radius": 300,
     "position":200,
     "textSize": 50,
     "textColor": [255, 255, 255]
+  },
+  "cutsceneText": {
+    "textSize": 32,
+    "textColor": [255, 255, 255],
+    "duration": 5000,
+    "rotationSpeed": 0.5,
+    "obj":[ 
+      {"text": "這是一個關於音樂的故事"},
+      {"text": "在一個充滿旋律的世界裡"},
+      {"text": "有一位熱愛三軸的少年"},
+      {"text": "他夢想成為一名偉大的？？？"},
+      {"text": "他每天都在練習和創作"},
+      {"text": "終於有一天，他遇到了一位神秘的AI"},
+      {"text": "世界教會了他許多關於時間的秘密"},
+      {"text": "從此，他的專題之路變得更加精彩"},
+      {"text": "你知道音遊社這禮拜有活動嗎？"}
+    ]
   },
   "websocket": {
     "serverAddress": "ws://127.0.0.1:8080"

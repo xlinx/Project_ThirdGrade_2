@@ -71,9 +71,9 @@ class drag{
             else if (everyNotePosition < CONFIG.uslNoteSetting.judgeLine + CONFIG.uslNoteSetting.judgeRange) {
                 // 計算角度差異，並安全轉換為 0~360
                 let noteAngleDeg = ((degrees(everyDragLand * (TWO_PI / 32)) % 360) + 360) % 360;
-                let playerAngleDeg = ((angleCount_360() % 360) + 360) % 360;
+                // 玩家角度已經在 angleCount_360L() 中轉為 0~360 度
                 
-                let angleDiff = Math.abs(playerAngleDeg - noteAngleDeg);
+                let angleDiff = Math.abs(angleCount_360L() - noteAngleDeg);
 
                 // 修正 0 度與 360 度跨越的最短差距
                 if (angleDiff > 180) {

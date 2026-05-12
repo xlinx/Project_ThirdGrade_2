@@ -128,3 +128,29 @@ server.on("connection" ,(ws) => {    // message
 
 
 // ws.boardcast 
+
+// whach dog 當有任何訊號有問題亮紅燈之類的
+// who 每台都要有一個ID辨別裝置
+// 指令
+// 加入時間戳記(封包到達時間，檢查延遲等)
+// this.initExpress
+// this.initUDP
+// this.initWebsocket
+// this.initHttp
+// 每個步驟記錄到資料庫所以選用mogonDB
+// proxy
+
+
+// cline 
+// antd
+// react
+// immer
+// redux
+// zustand
+
+// m - model 不可變資料
+// c - controller 處理邏輯
+// v - view 顯示
+
+// action 驅動 state改變 
+

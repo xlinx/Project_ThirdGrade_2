@@ -13,7 +13,8 @@ const char* password = "0487878787";
 const char* websocket_server = "ws://172.20.10.2:8080";
 const int botton = 5; // 按鈕腳位
 bool lastState = HIGH; // 上次按鈕狀態，初始為未按下 
-int bottonStatus = 0; 
+int bottonStatus = 0;
+bool bottonSent = false; // 追踪是否已發送過這次按下事件
 
 using namespace websockets;
 WebsocketsClient webClient;
@@ -40,6 +41,7 @@ float mXscale = 1.0f, mYscale = 1.0f, mZscale = 1.0f;  // 軟鐵比例
 // ==================== 連線與校準狀態管理 ====================
 int status = 0;                         // 0: 初始狀態, 1: 陀螺儀校準中, 2: 磁力計校準中, 3: 校準完成並開始傳送數據
 int lastStatus = -1;                    // 
+bool hasTriggered = false;              // 用來擋住重複輸出
 int frequency = 35;                     // WebSocket 傳送頻率 (毫秒)
 bool calibrationDone = false;           // 校準流程是否已完成
 bool wifiConnected = false;             // WiFi 連線狀態
@@ -105,15 +107,19 @@ void loop() {
 
   bool current = digitalRead(botton);
   // 偵測狀態改變
-    if (current != lastState) {
-      if (current == LOW) {
-        bottonStatus = 1;
-      } else {
-        bottonStatus = 0;
-      }
-      lastState = current;   // ★ 重點：更新上次狀態
-      delay(2); // 極短去彈跳
-    }
+  if (current == LOW && lastState == HIGH) {
+    bottonStatus = 1;
+    bottonSent = false; // 按鈕按下，准备发送一次
+    // Serial.println(1); 
+    delay(20); // 必要的去彈跳
+  } 
+
+  else if (current == HIGH && lastState == LOW) {
+    bottonStatus = 0;
+    delay(20); // 去彈跳
+  }
+
+  lastState = current; // 更新狀態
 
   // 檢查 WiFi 和 WebSocket 連線 
   connectStatus();  
@@ -239,8 +245,14 @@ void websocketPublish() {
                 StaticJsonDocument<200> doc;
                 doc["type"] = "sensor_data";
                 doc["yaw"] = yaw;
-                doc["botton"] = "bottonstatus";
-                doc["bottonstatus"] = bottonStatus;
+                doc["type"] = "button";
+                // 只在按鈕按下且還未發送時發送一次
+                if (bottonStatus == 1 && !bottonSent) {
+                    doc["bottonstatus"] = 1;
+                    bottonSent = true; // 標記已發送
+                } else {
+                    doc["bottonstatus"] = 0;
+                }
                 String output;
                 serializeJson(doc, output);
                 webClient.send(output);

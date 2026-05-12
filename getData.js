@@ -1,11 +1,19 @@
 let firstLineInt;
 let song; // 用來存放音樂檔案的變數
 let hit;
+let preMaskedImgs = []; // 用來存放預處理好的遮罩圖片
 
 // 載入資料==========================================================
 function preload() {
   CONFIG = loadJSON('setting.json');   //載入設定檔案
 
+  for (let i = 0; i < 11; i++) { 
+        let img = loadImage(`otherData/picturtGet/base${i}.jpg`, 
+            () => console.log(`圖片 ${i} 載入成功`),
+            () => console.error(`圖片 ${i} 載入失敗`)
+        );
+        cutsceneImgsList.push(img);  //
+    }
 }
 
 
@@ -43,10 +51,11 @@ function websocketSetup() {
 }
 
 
+// angle=====================================================================
 let lastAngle = 0;
 let totalAngle = 0;
 
-function angleCount_360(){
+function angleCount_360(){     // 0~180~-180轉 累積角度計算函數
   // 檢查 angle 是否為有效數字
   if (!Number.isFinite(angle)) {
     return 0;
@@ -54,7 +63,7 @@ function angleCount_360(){
   
   let delta = angle - lastAngle;
 
-   if (delta > 180) {
+   if (delta > 180) {        
     delta -= 360;
   } else if (delta < -180) {
     delta += 360;
@@ -65,6 +74,20 @@ function angleCount_360(){
 
   return totalAngle;
 }
+
+
+function angleCount_360L(){
+  let angle = ((angleCount_360() % 360) + 360) % 360; // 累計角度轉換為 0~360 度圓內
+  return angle ;
+    
+}
+
+function angleCount_360RL(){
+  let angle = radians(angleCount_360L());  // 轉換為弧度
+  return angle ;
+}
+
+
 
 let isGet = false; 
 // 抓取歌曲清單==========================================================
@@ -137,7 +160,7 @@ function getCSVData() {
 }
 
 
-
+// 載入音效==========================================================
 let audioCtx;
 let sounds = {}; // 用來存放所有載入好的音效
 // 初始化 AudioContext 並預載入音效

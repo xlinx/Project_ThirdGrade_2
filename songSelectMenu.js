@@ -50,66 +50,110 @@ function drawSongMenu(page, quantity) {
     let currentDisplayList = songList.slice(startIndex, endIndex);
     let actualCount = currentDisplayList.length;
 
-    // 將玩家角度 (假設是 angleCount) 轉換為 0 ~ TWO_PI 弧度
-    // 限制在 360 度內並轉弧度
-    let playerRad = radians(angleCount_360() % 360);
-    if (playerRad < 0) playerRad += TWO_PI;
+    selectedSongIndex = -1;
 
-    selectedSongIndex = -1; // 每幀重置
-
+    // 根據 actualCount 動態計算每首歌的角度位置
     for (let i = 0; i < actualCount; i++) {
         let currentSong = currentDisplayList[i];
         let btnAngle = TWO_PI * i / actualCount;
 
-        let x = cos(btnAngle) * 300;
-        let y = sin(btnAngle) * 300;
-
-        // --- 判定重疊邏輯 ---
-        // 計算玩家角度與方塊角度的最小差值
-        let angleDiff = abs(playerRad - btnAngle);
+        // --- 1. 判定選中狀態 ---
+        let angleDiff = abs(angleCount_360RL() - btnAngle);
         if (angleDiff > PI) angleDiff = TWO_PI - angleDiff;
-
-        // 如果差值小於這首歌佔據的角度範圍 (PI / actualCount)
         let isHovered = (angleDiff < PI / actualCount);
+
         if (isHovered) {
-            selectedSongIndex = startIndex + i; // 紀錄在總清單中的索引
+            selectedSongIndex = startIndex + i;
         }
+
+        // --- 2. 緩動動畫邏輯 (Easing) ---
+        // 為每首歌初始化一個動畫數值，如果還沒有的話就設為 170
+        if (currentSong.sizeAnima === undefined) {
+            currentSong.sizeAnima = 170;
+        }
+
+        // 定義目標尺寸
+        let targetSize = isHovered ? 210 : 170;
+
+        // 使用你習慣的公式：現在值 += (目標值 - 現在值) * 速度
+        // 0.1 可以調整動畫的「黏度」
+        currentSong.sizeAnima += (targetSize - currentSong.sizeAnima) * 0.1;
+        
+        let finalSize = currentSong.sizeAnima;
+
+        // --- 3. 繪製邏輯 (根據 finalSize 連動) ---
+        // 讓半徑也跟著尺寸縮放連動，選中時會平滑地往外推
+        let currentRadius = map(finalSize, 170, 210, CONFIG.songSelectMenu.songListRadius, CONFIG.songSelectMenu.songListRadius + 25);
+        
+        let x = cos(btnAngle) * currentRadius;
+        let y = sin(btnAngle) * currentRadius;
 
         push();
         translate(x, y);
         rotate(btnAngle + HALF_PI);
 
-        // 如果被選中，畫出外框
+        // 如果被選中，畫出外框 (外框透明度也可以跟著縮放連動)
         if (isHovered) {
             noFill();
-            stroke(255, 255, 0); // 黃色外框
+            stroke(255, 255, 0, map(finalSize, 170, 210, 0, 255)); // 漸漸顯現
             strokeWeight(5);
             rectMode(CENTER);
-            rect(0, 0, 185, 185); // 比圖片大一點點
+            rect(0, 0, finalSize + 15, finalSize + 15); 
         }
 
         if (currentSong && currentSong.isLoadJpg) {
             imageMode(CENTER);
-            image(currentSong.jpg, 0, 0, 170, 170);
+            image(currentSong.jpg, 0, 0, finalSize, finalSize);
 
             fill(255);
             noStroke();
             textAlign(CENTER);
-            textSize(16);
-            text(currentSong.name, 0, 110);
+            // 文字大小也做一點微小的平滑變化
+            textSize(map(finalSize, 170, 210, 16, 20));
+            text(currentSong.name, 0, finalSize/2 + 25);
         } else {
             rectMode(CENTER);
-            fill(100);
+            fill(map(finalSize, 170, 210, 100, 150)); 
             noStroke();
-            rect(0, 0, 170, 170);
+            rect(0, 0, finalSize, finalSize);
         }
         pop();
     }
     pop();
 }
 
+
 function selectSong() {
+  if (status === 1) {
+    fill(255);
+    text(angleCount_360(), 100, 500);
+
+    let maxPage = Math.ceil(songList.length / CONFIG.songSelectMenu.songQuantity) - 1;
+    if (maxPage < 0) maxPage = 0;
+
+    // --- 關鍵修改：只呼叫一次，把結果存起來 ---
+    let rotationResult = diffAngle360(); 
+
+    if (rotationResult === 1) {
+        // 順時針：下一頁 (++)
+        CONFIG.songSelectMenu.songPage++;
+        if (CONFIG.songSelectMenu.songPage > maxPage) {
+            CONFIG.songSelectMenu.songPage = 0; 
+        }
+    } else if (rotationResult === -1) {
+        // 逆時針：上一頁 (--)
+        CONFIG.songSelectMenu.songPage--;
+        if (CONFIG.songSelectMenu.songPage < 0) {
+            CONFIG.songSelectMenu.songPage = maxPage;
+        }
+    }
+}
+
+
+    
     if (botton === 1 && status === 1 ) {
+
+        botton = 0; // 消費按鈕，防止帶入下一個場景
 
         if (selectedSongIndex !== -1) {
             let targetSong = songList[selectedSongIndex];
@@ -147,7 +191,7 @@ function selectSong() {
         }
     }
 }
-
+   
 
 
 
@@ -172,14 +216,15 @@ function keyPressed() {
     }
 
     if (key === 'a' || key === 'A') {
-        status = 0;
+            isplaying = false;
+            status = 0;
+            endSong();
+            selectedSongIndex = -1;
     }
+
     if (key === 's' || key === 'S') {
         status = 1;  // 改為 0，觸發停止邏輯
-        if (song && !song.paused) {
-            song.pause();
-            song.currentTime = 0;
-        }
+        endSong();
         selectedSongIndex = -1;  // 清除選中的歌曲
         console.log("stop at", song?.currentTime || "unknown", "notes len", Notes.length);
     }
@@ -189,6 +234,42 @@ function keyPressed() {
     if (key === 'p' || key === 'P') {
         status = 2.5;
     }
+    if (key === 'T' || key === 't') {
+        status = 3;
+    }
+    if(key === 'R' || key === 'r'){
+        status = 3.5;
+    }
+}
+
+let isStatusJustChanged = true;    // 狀態變更標記
+function diffAngle360() {
+    if(status !== 1) {
+        isStatusJustChanged = true; // 每次離開選歌狀態都重置標記
+        return 0; // 不在選歌狀態，不進行旋轉檢測
+    }
+
+    if (isStatusJustChanged) {
+        if (statusEntryTimer.upDate(2000)) { 
+            // 一秒過後，更新目前的角度為初始基準，避免累積之前的位移
+            perDiffAngle360 = angleCount_360();
+            isStatusJustChanged = false; 
+        }
+        return 0;
+    }
+
+    // 2. 一秒過後，才開始執行原本的快撥偵測邏輯
+    if (passSongSelectPageTimer.upDate(100)) {
+        let currentAngle = angleCount_360();
+        let delta = currentAngle - perDiffAngle360;
+
+        perDiffAngle360 = currentAngle;
+
+        if (delta > 60) return 1;
+        if (delta < -60) return -1;
+    }
+
+    return 0;
 }
 
 

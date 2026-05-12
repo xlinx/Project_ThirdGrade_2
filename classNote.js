@@ -127,10 +127,10 @@ class note {
 
   getNoteAngleDiff(){
      let noteAngleDeg = degrees(this.getNoteCenterAngle()); // 將音符的角度(弧度)轉為度數
-      let playerAngleDeg = ((angleCount_360() % 360) + 360) % 360; // 將玩家累積的角度強制轉換為 0~360 度圓內
+      // 玩家角度已經在 angleCount_360L() 中轉為 0~360 度
 
       // 計算兩者之間的最小夾角差值 (0~180度)
-      let angleDiff = Math.abs(playerAngleDeg - noteAngleDeg);
+      let angleDiff = Math.abs(angleCount_360L() - noteAngleDeg);
       return angleDiff;
   }
 
