@@ -10,6 +10,9 @@ let cutsceneImgsList = []; // 用來存放從 過場圖片資料的陣列
 let Notes = []; // 用來存放所有音符的陣列
 let Drags = []; // 用來存放所有拖曳音符的陣列
 let Rotates = []; // 用來存放所有旋轉音符的陣列
+let opObj ; // 用來存放op物件
+let bgm1Obj; // 用來存放bgm1物件
+let selectEffect; // 用來存放選歌特效物件
 
 
 let pass3_5Timer ; 
@@ -22,6 +25,7 @@ let isLoad = false; // 用來追蹤過場動畫是否已經載入過
 
 let angle = 0; // 用來存放玩家當前的角度
 let botton = 0; // 用來存放玩家當前的按鈕狀態
+let lastBotton = 0; // 用來偵測按鈕上升沿，只觸發一次
 
 // 判定文字顯示系統
 let JudgeTexts = []; // 存儲所有正在顯示的判定文字
@@ -62,6 +66,10 @@ function setup() {
 pass3_5Timer = new Timer(); // 3.5過門計時器
 passSongSelectPageTimer = new Timer(); // 翻頁計時器
 statusEntryTimer = new Timer(); // 翻頁初始冷卻計時器
+
+opObj = new OpObj(); // 初始化op物件
+bgm1Obj = new Bgm1Obj(); // 初始化bgm1物件
+selectEffect = new SelectEffect(); // 初始化選歌特效物件
 }
 
 
@@ -69,6 +77,14 @@ statusEntryTimer = new Timer(); // 翻頁初始冷卻計時器
 function draw() {
   background(...CONFIG.display.backgroundColor);
   frameRate(CONFIG.display.frameRate);
+
+  // 狀態切換觸發器：當 status 變化時，觸發對應的音樂播放或停止
+  if (typeof prevStatus === 'undefined') prevStatus = status;
+  if (status !== prevStatus) {
+    if (opObj) opObj.update(1);   
+    if (bgm1Obj) bgm1Obj.update(3);   
+    prevStatus = status;
+  }
 
   let time = millis(); 
 push(); 
@@ -79,7 +95,8 @@ pop();
 
 console.log("status", status);
 
-if(botton === 1){
+const isHitPressed = botton === 1 && lastBotton !== 1;
+if (isHitPressed) {
   playSound('hit');
 }
 
@@ -105,7 +122,7 @@ if(botton === 1){
         }
     }
     drawSongMenu( CONFIG.songSelectMenu.songPage, CONFIG.songSelectMenu.songQuantity);
-    
+     opObj.update(1);
   }
 
   if(status == 2 || status == 2.5){
@@ -114,9 +131,6 @@ if(botton === 1){
     
     if (!isplaying && song && status !== 2.5) {
         song.play();
-console.log("csv rows", table?.getRowCount?.());
-console.log("min trigger", Math.min(...Notes.map(n => n.triggerTime)));
-console.log("notes len", Notes.length, "drags len", Drags.length, "rotates len", Rotates.length);
         isplaying = true;
     }
 
@@ -199,31 +213,38 @@ console.log("notes len", Notes.length, "drags len", Drags.length, "rotates len",
 
     
   if(status == 3){
+
     settlement();
+    bgm1Obj.update(3);
+    prevStatus = true;
   }
 
-     if(status == 3.5){
-    if(!isLoad){
-      CutsceneText[0] = new cutsceneText(-PI);
-      CutsceneImg[0] = new cutsceneImg();
-      isLoad = true;
+    // 在 draw() 的 status == 3.5 邏輯中修改
+if (status == 3.5) {
+    if (!isLoad) {
+        CutsceneText[0] = new cutsceneText(-PI);
+        CutsceneImg[0] = new cutsceneImg();
+        isLoad = true;
     }
     CutsceneImg[0].display();
     song.pause();
-     if (pass3_5Timer.upDate(CONFIG.cutsceneText.duration)) {
-        status = 1; 
-        utsceneText = [];
+
+    if (pass3_5Timer.upDate(CONFIG.cutsceneText.duration)) {
+        // --- 修正處：進入 status 1 前的大掃除 ---
+        status = 1;
+        hasInitializedMenu = false; // 告訴 selectSong 需要重新初始化
+        // ------------------------------------
+        CutsceneText = []; 
         CutsceneImg = [];
-        isLoad = false; // 重置過場動畫載入狀態，為下一次使用做準備
+        isLoad = false;
     }
-
-  }
-
+}
 
   if(status == 2.5){
     pause();
     isplaying = false;
 }
+  lastBotton = botton; // 更新上一幀的按鈕狀態
 
 
   if(status !== 2 && status !== 3 && status !== 2.5) {
@@ -233,6 +254,9 @@ console.log("notes len", Notes.length, "drags len", Drags.length, "rotates len",
         CONFIG.score.miss = 0;
         isplaying =false;
   }
+
+
+  console.log(CONFIG.songSelectMenu.songPage);
 }
 
 
@@ -316,4 +340,12 @@ class OpacityMask {
         }
         return this.opacity;
     }
+}
+
+// 用於計算全局旋轉角度的函數 
+let allAngle = 0;
+function stillAllRun(s){
+  allAngle += s;
+
+  return allAngle;
 }

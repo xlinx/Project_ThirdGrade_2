@@ -145,9 +145,18 @@ pop();
     playerMark();
 
     if (backToMenu() && botton === 1) {
-        // 回到選歌畫面
-        status = 1;
         selectedSongIndex = -1;
+
+        if (pass3_5Timer.upDate(CONFIG.pause.pauseToSelectDuring)) {
+        // --- 修正處：進入 status 1 前的大掃除 ---
+        status = 1;
+        hasInitializedMenu = false; // 告訴 selectSong 需要重新初始化
+        // ------------------------------------
+        CutsceneText = []; 
+        CutsceneImg = [];
+        isLoad = false;
+    }
+
         botton = 0; // 重置按鈕
     }else if (backGame() && botton === 1) {
         status = 2;

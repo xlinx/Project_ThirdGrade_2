@@ -1,6 +1,8 @@
 let firstLineInt;
 let song; // 用來存放音樂檔案的變數
 let hit;
+let op;
+let bgm1;
 let preMaskedImgs = []; // 用來存放預處理好的遮罩圖片
 
 // 載入資料==========================================================
@@ -168,7 +170,9 @@ function setSounds() {
     audioCtx = getAudioContext();  // 使用 p5.js 的 getAudioContext() 來確保兼容性
     
     const soundFiles = {
-        hit: 'data/hit.mp3',
+        hit: 'otherData/picturtGet/hit.mp3',
+        op:  'otherData/picturtGet/Cycotation.mp3',
+        bgm1:'otherData/picturtGet/bgm1.mp3'
     };
 
     initAllSounds(soundFiles);
@@ -202,6 +206,8 @@ function playSound(name) {
     source.buffer = sounds[name];
     source.connect(audioCtx.destination);
     source.start(0);
+
+  return source;
 }
 
 // 初始化音符==========================================================
@@ -221,5 +227,73 @@ function initializeNotes() {
     }else if(row.type === 'rotate') {
       Rotates.push(new Rotate(row.triggerTime, row.direction));
     }
+  }
+}
+// 基底類別：負責管理音訊節點的生命週期與狀態切換邏輯
+class SoundStateObj {
+  constructor(soundName) {
+    this.soundName = soundName;
+    this.isTrigger = false;
+    this.source = null;
+  }
+
+  // 統一的停止邏輯
+  stopSound() {
+    if (this.source) {
+      this.source.stop();
+      this.source.disconnect(); // 斷開連接以釋放資源
+      this.source = null;
+    }
+  }
+
+  // 
+  update(targetStatus) {
+    // 進入目標狀態
+    if (status === targetStatus) {
+      if (!this.isTrigger) { //
+        this.stopSound();
+        this.source = this.play(); // 呼叫子類別實作的播放細節
+        this.isTrigger = true;
+      }
+    }else {
+      if (this.isTrigger) {
+        this.stopSound();
+        this.isTrigger = false;
+      }
+    }
+  }
+
+  // 播放行為：預設行為，可被子類別覆寫
+  play() {
+    return playSound(this.soundName);
+  }
+}
+
+// OP 物件：繼承後只需指定名稱
+class OpObj extends SoundStateObj {
+  constructor() {
+    super('op');
+  }
+  play() {
+    let src = playSound(this.soundName);
+    if (src) {
+      src.loop = true; // 只有 BGM 需要循環
+    }
+    return src;
+  }
+}
+
+// BGM 物件：繼承後覆寫播放行為（加入循環）
+class Bgm1Obj extends SoundStateObj {
+  constructor() {
+    super('bgm1');
+  }
+
+  play() {
+    let src = playSound(this.soundName);
+    if (src) {
+      src.loop = true; // 只有 BGM 需要循環
+    }
+    return src;
   }
 }

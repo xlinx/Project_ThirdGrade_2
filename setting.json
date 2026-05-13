@@ -11,12 +11,12 @@
   },
   "note": {
     "arcWidthValue": 10,
-    "noteStrokeWeight": 20,
+    "noteStrokeWeight": 15,
     "judgeAllowAngle": 5,
     "strokeColor": [255, 255, 255]
   },
   "drag": {
-    "noteStrokeWeight": 20,
+    "noteStrokeWeight": 15,
     "density": 10,
     "strokeColor": [255, 255, 255]
   },
@@ -55,12 +55,15 @@
   "songSelectMenu": {
     "songPage": 0,
     "songQuantity": 8,
-    "songbuttonWidth": 200,
-    "songbuttonHeight": 200,
+    "songbuttonWidth": 190,
     "songListRadius": 300,
+    "arcRadius": 1000,
     "buttonColor": [0, 0, 255],
     "textSize": 24,
-    "textColor": [255, 255, 255]
+    "textColor": [255, 255, 255],
+    "speedE" : 0.4,
+    "topicTextE"  : "CYCOTATION",
+    "arcRadiusE": 900
   },
   "pause": {
     "rotateSpeed": 0.6,
@@ -71,7 +74,8 @@
     "radius": 300,
     "position":200,
     "textSize": 50,
-    "textColor": [255, 255, 255]
+    "textColor": [255, 255, 255],
+    "pauseToSelectDuring": 200
   },
   "cutsceneText": {
     "textSize": 32,

@@ -40,15 +40,20 @@ class Song {
 
 // 在 drawSongMenu 外部定義一個變數，方便 keyPressed 使用
 let selectedSongIndex = -1;
+let selectSongSpeed = 0.2; // 選歌動畫速度
+let selectSongAniAng = 0; // 選歌動畫角度
+
 
 function drawSongMenu(page, quantity) {
-    push();
+push();    
     translate(width / 2, height / 2);
+
+    selectEffect.update(); // 更新選歌特效
 
     let startIndex = page * quantity;
     let endIndex = startIndex + quantity;
-    let currentDisplayList = songList.slice(startIndex, endIndex);
-    let actualCount = currentDisplayList.length;
+    let currentDisplayList = songList.slice(startIndex, endIndex);  // 確保不會超出陣列範圍
+    let actualCount = currentDisplayList.length;  // 實際顯示的歌曲數量
 
     selectedSongIndex = -1;
 
@@ -73,10 +78,10 @@ function drawSongMenu(page, quantity) {
         }
 
         // 定義目標尺寸
-        let targetSize = isHovered ? 210 : 170;
+        let targetSize = isHovered ? CONFIG.songSelectMenu.songbuttonWidth + 80: CONFIG.songSelectMenu.songbuttonWidth;
+        let nameOffset = isHovered ? 40 : 20;
+        let levelOffset = isHovered ? -20 : -10;
 
-        // 使用你習慣的公式：現在值 += (目標值 - 現在值) * 速度
-        // 0.1 可以調整動畫的「黏度」
         currentSong.sizeAnima += (targetSize - currentSong.sizeAnima) * 0.1;
         
         let finalSize = currentSong.sizeAnima;
@@ -88,68 +93,154 @@ function drawSongMenu(page, quantity) {
         let x = cos(btnAngle) * currentRadius;
         let y = sin(btnAngle) * currentRadius;
 
-        push();
+    
+
+push();
         translate(x, y);
         rotate(btnAngle + HALF_PI);
 
-        // 如果被選中，畫出外框 (外框透明度也可以跟著縮放連動)
+         // 如果被選中_裝飾
         if (isHovered) {
             noFill();
             stroke(255, 255, 0, map(finalSize, 170, 210, 0, 255)); // 漸漸顯現
             strokeWeight(5);
             rectMode(CENTER);
-            rect(0, 0, finalSize + 15, finalSize + 15); 
+            circle(0, 0, finalSize + 20); // 外框比圖片大一點
         }
 
+        
         if (currentSong && currentSong.isLoadJpg) {
             imageMode(CENTER);
-            image(currentSong.jpg, 0, 0, finalSize, finalSize);
 
-            fill(255);
-            noStroke();
-            textAlign(CENTER);
-            // 文字大小也做一點微小的平滑變化
-            textSize(map(finalSize, 170, 210, 16, 20));
-            text(currentSong.name, 0, finalSize/2 + 25);
+            if (currentSong && currentSong.isLoadJpg) {
+                    imageMode(CENTER);
+
+                    // ===== 圓形遮罩 =====
+                    drawingContext.save();
+
+                    drawingContext.beginPath();
+                    drawingContext.arc(0, 0, finalSize / 2, 0, TWO_PI);
+                    drawingContext.closePath();
+                    drawingContext.clip();
+
+                    // 如果被選中，畫出外框 (外框透明度也可以跟著縮放連動)
+                    if (isHovered) {
+                        selectSongAniAng += selectSongSpeed * 0.05; 
+                        rotate(selectSongAniAng);
+                        image(currentSong.jpg, 0, 0, finalSize, finalSize);
+
+                    }
+
+                    image(currentSong.jpg, 0, 0, finalSize, finalSize);
+
+                    drawingContext.restore();
+                    // ===================
+
+                    // 可選：外圈
+                    stroke(100);
+                    strokeWeight(3);
+                    noFill();
+                    circle(0, 0, finalSize);
+
+                    fill(255);
+                    noStroke();
+                    textAlign(CENTER);
+                    textSize(map(finalSize, 170, 210, 16, 20));
+                    text(currentSong.name, 0, finalSize / 2 + nameOffset);
+                    text("LEVEL " + currentSong.level, 0, -finalSize / 2 + levelOffset);
+
+                    fill(0);
+                    circle(0, 0, finalSize - 190); // 繪製歌曲圖片的圓形底座
+
+                    if (isHovered) {
+                        fill(200);
+                        triangle(
+                            0, -finalSize + levelOffset+ 100,
+                            -60, -finalSize + levelOffset + 40,
+                            60, -finalSize + levelOffset + 40
+                        );
+                    }
+
+                }
+
         } else {
             rectMode(CENTER);
             fill(map(finalSize, 170, 210, 100, 150)); 
             noStroke();
             rect(0, 0, finalSize, finalSize);
         }
-        pop();
+pop();
     }
-    pop();
+    noFill(); stroke(255,100); strokeWeight(2);
+    rotate(-radians(stillAllRun(0.3)));
+    arc(0,0,
+        CONFIG.songSelectMenu.arcRadius ,
+        CONFIG.songSelectMenu.arcRadius ,
+        radians(15),
+        radians(70)
+    );
+
+    arc(0,0,
+        CONFIG.songSelectMenu.arcRadius ,
+        CONFIG.songSelectMenu.arcRadius ,
+        radians(210),
+        radians(265)
+    );
+
+    arc(0,0,
+        CONFIG.songSelectMenu.arcRadius+30 ,
+        CONFIG.songSelectMenu.arcRadius+30 ,
+        radians(10),
+        radians(75)
+    );
+
+    arc(0,0,
+        CONFIG.songSelectMenu.arcRadius-30 ,
+        CONFIG.songSelectMenu.arcRadius-30 ,
+        radians(215),
+        radians(260)
+    );
+
+pop();
+
+
+    
+
+
 }
 
 
+
+let hasInitializedMenu = false;
+
 function selectSong() {
   if (status === 1) {
-    fill(255);
-    text(angleCount_360(), 100, 500);
+    // --- 進入狀態 1 的那一刻，強制同步所有數值 ---
+    if (!hasInitializedMenu) {
+      CONFIG.songSelectMenu.songPage = 0;   // 強制回第一頁
+      perDiffAngle360 = angleCount_360();    // 立即同步角度基準
+      hasInitializedMenu = true; 
+      console.log("選單重置：頁碼歸零，角度已對齊");
+    }
 
     let maxPage = Math.ceil(songList.length / CONFIG.songSelectMenu.songQuantity) - 1;
     if (maxPage < 0) maxPage = 0;
 
-    // --- 關鍵修改：只呼叫一次，把結果存起來 ---
-    let rotationResult = diffAngle360(); 
-
-    if (rotationResult === 1) {
-        // 順時針：下一頁 (++)
-        CONFIG.songSelectMenu.songPage++;
-        if (CONFIG.songSelectMenu.songPage > maxPage) {
-            CONFIG.songSelectMenu.songPage = 0; 
-        }
-    } else if (rotationResult === -1) {
-        // 逆時針：上一頁 (--)
-        CONFIG.songSelectMenu.songPage--;
-        if (CONFIG.songSelectMenu.songPage < 0) {
-            CONFIG.songSelectMenu.songPage = maxPage;
+    // 只有在進入 0.5 秒後，才開始允許旋轉換頁，避免切換瞬間的抖動
+    if (statusEntryTimer.upDate(200)) {
+        let rotationResult = diffAngle360(); 
+        if (rotationResult === 1) {
+            CONFIG.songSelectMenu.songPage = (CONFIG.songSelectMenu.songPage + 1) % (maxPage + 1);
+        } else if (rotationResult === -1) {
+            CONFIG.songSelectMenu.songPage = (CONFIG.songSelectMenu.songPage - 1 + (maxPage + 1)) % (maxPage + 1);
         }
     }
-}
+  } else {
+    // 離開狀態 1 時，重置標記
+    hasInitializedMenu = false;
+  }
 
-
+    
     
     if (botton === 1 && status === 1 ) {
 
@@ -242,38 +333,88 @@ function keyPressed() {
     }
 }
 
-let isStatusJustChanged = true;    // 狀態變更標記
 function diffAngle360() {
-    if(status !== 1) {
-        isStatusJustChanged = true; // 每次離開選歌狀態都重置標記
-        return 0; // 不在選歌狀態，不進行旋轉檢測
-    }
-
-    if (isStatusJustChanged) {
-        if (statusEntryTimer.upDate(2000)) { 
-            // 一秒過後，更新目前的角度為初始基準，避免累積之前的位移
-            perDiffAngle360 = angleCount_360();
-            isStatusJustChanged = false; 
-        }
-        return 0;
-    }
-
-    // 2. 一秒過後，才開始執行原本的快撥偵測邏輯
+    // 移除所有 if(status !== 1) 的判斷
     if (passSongSelectPageTimer.upDate(100)) {
         let currentAngle = angleCount_360();
         let delta = currentAngle - perDiffAngle360;
+        
+        perDiffAngle360 = currentAngle; // 每次執行都更新基準
 
-        perDiffAngle360 = currentAngle;
-
-        if (delta > 60) return 1;
-        if (delta < -60) return -1;
+        if (delta > 80) return 1;
+        if (delta < -80) return -1;
     }
-
     return 0;
 }
 
 
 
+class SelectEffect {
+    constructor(){
+        this.rotateAngle = 0;
+        this.speed = CONFIG.songSelectMenu.speedE;
+        this.topicText = CONFIG.songSelectMenu.topicTextE;
+        this.undulate = 0;
+        this.radius = CONFIG.songSelectMenu.arcRadiusE;
+
+    }
+
+    update(){
+    push();
+        textAlign(CENTER, CENTER);
+        textSize(30);
+
+        this.rotateAngle += radians(this.speed);
+        rotate(this.rotateAngle,this.rotateAngle);
+  
+        this.undulate = this.radius/2 + sin(frameCount*0.05)*20;
+
+        this.display(this.topicText, this.undulate);
+    pop();
+    }
+
+    display(str, radius) {
+        let chars = str.split("");
+        let count = chars.length;
+
+        for (let i = 0; i < count; i++) {
+            // 1. 計算每個字的正弦/餘弦角度
+            let angle = TWO_PI * i / count;
+
+            let x = cos(angle) * radius;
+            let y = sin(angle) * radius;
+            
+            push();
+            translate(x, y);
+
+            // 2. 讓文字旋轉（HALF_PI 是為了讓文字垂直於圓周）
+            rotate(angle + HALF_PI);
+
+            // 3. 繪製文字
+            fill(255,100);
+            text(chars[i], 0, 0);
+            pop();
+        }
+     }
+}
+
+
+// class songViewNoisw extends Song{
+//     constructor( id,mp3) {
+//         super(id, mp3);
+//     }
+
+//     update() {
+//         if (!this.isLoadMp3) {
+//             this.isLoadMp3 = true;
+//             console.log(`已載入 MP3 路徑: ${this.mp3}`);
+//         }
+//     }
+
+
+
+
+// }
 
 
 
