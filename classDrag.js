@@ -6,8 +6,11 @@ class drag{
         this.noteLandEnd = noteLandEnd;
         this.direction = direction;
         this.noteSpeed = CONFIG.uslNoteSetting.speed;
+
         this.startPosition = CONFIG.uslNoteSetting.initialPosition;
-        this.endPosition = CONFIG.uslNoteSetting.lifeLine;
+        this.endPosition = CONFIG.uslNoteSetting.judgeLine;
+        this.lifePosition = CONFIG.uslNoteSetting.lifeLine;
+
         this.noteStrokeWeight = CONFIG.drag.noteStrokeWeight;
         this.density = CONFIG.drag.density;  
 
@@ -18,7 +21,7 @@ class drag{
     }
 
     display(time) {
-    // 從 startPosition 走到 lifeLine 需要的時間（毫秒）
+    // 從 startPosition 走到 judgeLine 需要的時間（毫秒）
     const requiredMs = (this.startPosition - this.endPosition) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
 
     // 【效能優化】如果時間還沒到（提早太多），或者這個拖曳音符已經結束很久（延遲太多），直接不進入高消耗的 density 迴圈運算
@@ -63,12 +66,12 @@ class drag{
             if(!this.isJudged[i]) {
 
             // 如果超過生命線 (miss)不受角度干擾
-            if (everyNotePosition <= this.endPosition) {
+            if (everyNotePosition <= this.lifePosition) {
                 this.judgeStyle[i] = 3;
                 this.isJudged[i] = true;
             } 
-            // 進入判定區間 (judgeLine + judgeRange)
-            else if (everyNotePosition < CONFIG.uslNoteSetting.judgeLine + CONFIG.uslNoteSetting.judgeRange) {
+            // 進入判定區間 (judgeLine 到 lifeLine 之間)才開始判定角度
+            else if (everyNotePosition < this.endPosition) {
                 // 計算角度差異，並安全轉換為 0~360
                 let noteAngleDeg = ((degrees(everyDragLand * (TWO_PI / 32)) % 360) + 360) % 360;
                 // 玩家角度已經在 angleCount_360L() 中轉為 0~360 度
@@ -121,7 +124,7 @@ class drag{
 
             // 在有效範圍內且未被判定才繪製
             if (this.isJudged[i]) continue;
-            if (everyNotePosition < this.endPosition || everyNotePosition >= this.startPosition) continue;
+            if (everyNotePosition < this.lifePosition || everyNotePosition >= this.startPosition) continue;
 
 
             const arcWidth = TWO_PI / CONFIG.note.arcWidthValue;  // 基礎弧寬

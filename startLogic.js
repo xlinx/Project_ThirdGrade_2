@@ -31,6 +31,9 @@ function startLogic(){
     push();
 
     let glow = map(sin(frameCount * 0.05), -1, 1, 0, 255);
+    let starBlur = map(sin(frameCount * 0.05), -1, 1, 0, 20);
+    drawingContext.shadowBlur = starBlur; 
+    drawingContext.shadowColor = `rgb(255, 255, 255)`;
     fill(255, 255, 255,glow);
     noStroke();
     textSize(30);

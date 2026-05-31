@@ -11,31 +11,32 @@
   },
   "note": {
     "arcWidthValue": 10,
-    "noteStrokeWeight": 15,
+    "noteStrokeWeight": 10,
     "judgeAllowAngle": 5,
     "strokeColor": [255, 255, 255]
   },
   "drag": {
-    "noteStrokeWeight": 15,
+    "noteStrokeWeight": 10,
     "density": 10,
     "strokeColor": [255, 255, 255]
   },
   "rotate": {
     "noteStrokeWeight": 5,
-    "strokeColorClockwise": [255, 0, 0],
-    "strokeColorCounterClockwise": [0, 0, 255],
-    "prefectRange": 70,
-    "greatRange": 110,
+    "strokeColorClockwise": [255, 30, 30],
+    "strokeColorCounterClockwise": [50, 50, 255],
+    "prefectRange": 90,
+    "greatRange": 130,
     "judgeNeedAngle": 20
   },
   "uslNoteSetting": {
-    "speed": 10,
+    "speed": 13,
     "initialPosition":1080,
     "judgeLine": 600,
-    "judgeRange":70,
+    "judgeRange":10,
     "lifeLine": 530,
-    "prefectRange": 10,
-    "greatRange": 17
+    "prefectRange": 16,
+    "greatRange": 25,
+    "playerMarkSize": 15
   },
   "score": {
     "textSize": 32,
@@ -48,8 +49,10 @@
   },
   "judgeText": {
     "textSize": 300,
-    "hitColor": [255,255,255],
-    "missColor": [255, 69, 0],
+    "hitColor": [255, 255, 255],
+    "perfectColor": [255, 235, 59],
+    "goodColor": [76, 175, 80],
+    "missColor": [244, 67, 54],
     "duration": 700
   },
   "songSelectMenu": {
@@ -58,12 +61,16 @@
     "songbuttonWidth": 190,
     "songListRadius": 300,
     "arcRadius": 1000,
+    "selectSongRotateSpeed": 0.2,
+    "selectSongAngle": 0,
     "buttonColor": [0, 0, 255],
     "textSize": 24,
     "textColor": [255, 255, 255],
     "speedE" : 0.4,
     "topicTextE"  : "CYCOTATION",
-    "arcRadiusE": 900
+    "arcRadiusE": 900,
+    "targetPreviewVolume": 0.6,
+    "fadeDuration": 1000
   },
   "pause": {
     "rotateSpeed": 0.6,

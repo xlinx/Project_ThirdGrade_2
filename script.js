@@ -1,4 +1,11 @@
-﻿let CONFIG = {}; // 用來存放設定參數
+﻿//timestamp
+//加入一個index0~1000跑
+//const timestamp = 1716717600000; 
+//const date = new Date(timestamp);
+//esp32有記憶體限制，時間跑到一定數會歸0
+//realtme
+
+let CONFIG = {}; // 用來存放設定參數
 
 let table;      // 宣告變數table
 let img;        // 宣告變數img
@@ -12,7 +19,9 @@ let Drags = []; // 用來存放所有拖曳音符的陣列
 let Rotates = []; // 用來存放所有旋轉音符的陣列
 let opObj ; // 用來存放op物件
 let bgm1Obj; // 用來存放bgm1物件
-let selectEffect; // 用來存放選歌特效物件
+let selectEffect; // 用來存放選歌特效物件 
+let songJudgeText; // 用來存放歌曲判定文字物件
+let songComboText; // 用來存放歌曲combo文字物件
 
 
 let pass3_5Timer ; 
@@ -70,6 +79,8 @@ statusEntryTimer = new Timer(); // 翻頁初始冷卻計時器
 opObj = new OpObj(); // 初始化op物件
 bgm1Obj = new Bgm1Obj(); // 初始化bgm1物件
 selectEffect = new SelectEffect(); // 初始化選歌特效物件
+songJudgeText = new SongJudgeText(); // 初始化歌曲判定文字物件
+songComboText = new SongComboText(); // 初始化歌曲combo文字物件
 }
 
 
@@ -81,7 +92,7 @@ function draw() {
   // 狀態切換觸發器：當 status 變化時，觸發對應的音樂播放或停止
   if (typeof prevStatus === 'undefined') prevStatus = status;
   if (status !== prevStatus) {
-    if (opObj) opObj.update(1);   
+    // if (opObj) opObj.update(1);   
     if (bgm1Obj) bgm1Obj.update(3);   
     prevStatus = status;
   }
@@ -122,7 +133,7 @@ if (isHitPressed) {
         }
     }
     drawSongMenu( CONFIG.songSelectMenu.songPage, CONFIG.songSelectMenu.songQuantity);
-     opObj.update(1);
+    //  opObj.update(1);
   }
 
   if(status == 2 || status == 2.5){
@@ -143,23 +154,16 @@ if (isHitPressed) {
       botton = 0; // 立即消耗按鈕狀態，防止同一幀內觸發 pause() 的選項
     }
 
-      textSize(30);
-      fill(0);
-      text(time ,100 ,200);
-      textSize(50);
-      text(angleCount_360() ,100 ,400);
-      text(angleCount_360L() ,100 ,500);
-      text(angleCount_360RL() ,100 ,600);
+      // textSize(30);
+      // fill(0);
+      // text(time ,100 ,200);
+      // textSize(50);
+      // text(angleCount_360() ,100 ,400);
+      // text(angleCount_360L() ,100 ,500);
+      // text(angleCount_360RL() ,100 ,600);
 
-
-      strokeWeight(5);
-      stroke(20);
-      circle(width / 2, height / 2, CONFIG.uslNoteSetting.judgeLine);  //判定線
-      stroke(50);
-      circle(width / 2, height / 2, CONFIG.uslNoteSetting.initialPosition); //顯示用的最大圓
+push();
       noFill();
-      stroke(50);
-      circle(width / 2, height / 2, CONFIG.uslNoteSetting.lifeLine);   //音符生命線
 
       // 更新和顯示判定文字
       for (let i = JudgeTexts.length - 1; i >= 0; i--) {
@@ -204,7 +208,7 @@ if (isHitPressed) {
         Rotates[i].display();
       }
     }
-
+pop();
   }
 
   if (song && song.paused && status == 2){

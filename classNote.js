@@ -5,22 +5,24 @@ class note {
     this.noteSpeed = CONFIG.uslNoteSetting.speed;
     this.notePosition = CONFIG.uslNoteSetting.initialPosition;
     this.noteStrokeWeight = CONFIG.note.noteStrokeWeight;
+
+    this.startPosition = CONFIG.uslNoteSetting.initialPosition;
+    this.endPosition = CONFIG.uslNoteSetting.judgeLine;
+    this.lifePosition = CONFIG.uslNoteSetting.lifeLine;
+
     this.isActive = false;  //是否已啟動
-    this.judgeAllowAngle = CONFIG.note.judgeAllowAngle;  // 判定允許的角度範圍(一半)
     this.judgeStyle = 0;  // 0: 未判定, 1: Perfect, 2: Good, 3: Miss  
     this.isJudged = false;
 
     this.requiredMs = 0;
     this.elapsedMs = 0;
 
-    // 預先計算從初始位置移動到生命線需要的時間
-    this.requiredMs = (this.initialPos - this.lifeLine) / this.noteSpeed * this.frameMs;
   }
 
   update(time) {
 
     // 計算到達 lifeLine 所需的時間（毫秒）
-    const requiredMs = (CONFIG.uslNoteSetting.initialPosition - CONFIG.uslNoteSetting.lifeLine) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
+    const requiredMs = (this.startPosition - this.endPosition) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
     
     // 計算從音符應該開始移動的時間點到現在，經過了多少毫秒
     const elapsedMs = time - (this.triggerTime - requiredMs);
@@ -37,7 +39,7 @@ class note {
     }
 
     // 如果超出了螢幕 (小於 lifeLine)，則停止活動
-    if (this.notePosition <= CONFIG.uslNoteSetting.lifeLine) {
+    if (this.notePosition <= this.lifePosition) {
       this.isActive = false;
     }
 
@@ -61,10 +63,10 @@ class note {
       // }
 
       //miss不受角度干擾
-      if (this.notePosition <= CONFIG.uslNoteSetting.lifeLine) {
+      if (this.notePosition <= this.lifePosition) {
         this.judgeStyle = 3; 
       }
-      else if (this.notePosition < CONFIG.uslNoteSetting.judgeLine + CONFIG.uslNoteSetting.judgeRange)
+      else if (this.notePosition < this.endPosition)
       {
         if(Math.abs(this.getNoteAngleDiff()) <= CONFIG.uslNoteSetting.prefectRange) {
           this.judgeStyle = 1; 

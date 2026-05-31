@@ -26,14 +26,41 @@ let sensorObj = { yaw: 0 }; // 預設資料結構
 function websocketSetup() {
   socket = new WebSocket(CONFIG.websocket.serverAddress); 
   
-  socket.onopen = () => {
-    console.log("連線成功！");
-        // 連線後執行一次
-        const registerMsg = {
-            type: "Web"
-        };
-        socket.send(JSON.stringify(registerMsg));
-  };
+  try {
+    // 【偵查成功】
+    socket.onopen = () => {
+      console.log(" WebSocket 連線成功！");
+      // 連線後執行一次註冊
+      const registerMsg = { type: "Web" };
+      socket.send(JSON.stringify(registerMsg));
+    };
+
+    // 【偵查失敗/錯誤】
+    socket.onerror = (error) => {
+      console.error(" WebSocket error）:", error);
+    };
+
+    // 【偵查斷開】
+    socket.onclose = (event) => {
+      console.warn(`WebSocket disconnect: ${event.code}, reason: ${event.reason}`);
+      // 清理現有的 WebSocket 物件
+      if (socket) {
+        socket.onopen = null;
+        socket.onerror = null;
+        socket.onclose = null;
+        socket = null; 
+      }
+
+      //重連機制
+      setTimeout(() => { 
+        console.log("Try reconnection...");
+        websocketSetup();
+      }, 5000); 
+    };
+
+  } catch (e) {
+    console.error(" WebSocket obj create error:", e);
+  }
   
   // 讀取訊息的核心：onmessage
   socket.onmessage = (event) => {
@@ -97,12 +124,12 @@ async function loadSongMenu() {
     if (isGet) return; // 已經抓取過了就不再抓取
     try {
         // 發送 HTTP 請求
-        const response = await fetch('http://localhost:3000/api/songs'); // 替換成你的 API 端點
+        const response = await fetch('http://localhost:3000/api/songs'); 
         const songs = await response.json(); // 拿到資料庫裡的陣列
         isGet = true; // 設定已經抓取過了
 
-        // 在這裡把資料存進你的 Class 物件
         songs.forEach(data => {
+            //建立歌曲物件，並存入 songList 陣列
             let newSong = new Song( data.id, 
                                     data.name, 
                                     data.song_artist,  

@@ -11,7 +11,7 @@ function settlement() {
 
 }
 
-let radiusAnima = 0;
+let radiusAnima = 0; 
 let angValue = 0; 
 let imgAngValue = 0; 
 let arcAngValue = 0; // 用於控制裝飾弧線旋轉的變量
@@ -61,7 +61,7 @@ push();
         fill(100,100,100);
     }
 
-    // 讓 radiusAnima 慢慢增加到 CONFIG.pause.radius，創造動畫效果
+    // 讓 radiusAnima ++ CONFIG.pause.radius
     if (radiusAnima < CONFIG.pause.selectRadius) {
         radiusAnima += (CONFIG.pause.selectRadius - radiusAnima) * 0.1;
     }
@@ -92,7 +92,7 @@ push();
 pop();
 
 
-    // --- 旋轉核心層 ---
+    // 旋轉
     push();
 
         if(currentDeg > 250 && currentDeg < 280){

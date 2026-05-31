@@ -13,8 +13,8 @@ class Rotate {
 
     update(time) {
 
-    // 計算到達 lifeLine 所需的時間（毫秒）
-    const requiredMs = (CONFIG.uslNoteSetting.initialPosition - CONFIG.uslNoteSetting.lifeLine) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
+    // 計算到達 judgeLine 所需的時間（毫秒）
+    const requiredMs = (CONFIG.uslNoteSetting.initialPosition - CONFIG.uslNoteSetting.judgeLine) / this.noteSpeed * (1000 / CONFIG.display.frameRate);
     
     // 計算從音符應該開始移動的時間點到現在，經過了多少毫秒
     const elapsedMs = time - (this.triggerTime - requiredMs);
@@ -22,7 +22,6 @@ class Rotate {
     if (elapsedMs < 0) {
       // 還沒到啟動時間
       this.isActive = false;
-      this.notePosition = CONFIG.uslNoteSetting.initialPosition;
     } else {
       // 已經啟動，根據經過的時間計算精確位置 (Frame-Independent)
       this.isActive = true;
@@ -31,7 +30,7 @@ class Rotate {
     }
 
     // 如果超出了螢幕 (小於 lifeLine)，則停止活動
-    if (this.notePosition <= CONFIG.uslNoteSetting.lifeLine) {
+    if (this.notePosition <= this.lifePosition) {
       this.isActive = false;
     }
 
@@ -110,8 +109,12 @@ class Rotate {
 
       push();
       if(this.direction === 1) {
+        drawingContext.shadowBlur = 20; 
+        drawingContext.shadowColor = `rgba(255, 100, 100, 1.9)`;
         stroke(...CONFIG.rotate.strokeColorClockwise);
       } else if(this.direction === 0) {
+        drawingContext.shadowBlur = 20; 
+        drawingContext.shadowColor = `rgba(100, 123, 255, 1.0)`;
         stroke(...CONFIG.rotate.strokeColorCounterClockwise);
       }
       

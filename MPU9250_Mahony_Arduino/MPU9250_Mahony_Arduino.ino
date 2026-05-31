@@ -42,7 +42,7 @@ float mXscale = 1.0f, mYscale = 1.0f, mZscale = 1.0f;  // 軟鐵比例
 int status = 0;                         // 0: 初始狀態, 1: 陀螺儀校準中, 2: 磁力計校準中, 3: 校準完成並開始傳送數據
 int lastStatus = -1;                    // 
 bool hasTriggered = false;              // 用來擋住重複輸出
-int frequency = 35;                     // WebSocket 傳送頻率 (毫秒)
+int frequency = 25;                     // WebSocket 傳送頻率 (毫秒)
 bool calibrationDone = false;           // 校準流程是否已完成
 bool wifiConnected = false;             // WiFi 連線狀態
 bool websocketConnected = false;        // WebSocket 連線狀態
@@ -245,7 +245,6 @@ void websocketPublish() {
                 StaticJsonDocument<200> doc;
                 doc["type"] = "sensor_data";
                 doc["yaw"] = yaw;
-                doc["type"] = "button";
                 // 只在按鈕按下且還未發送時發送一次
                 if (bottonStatus == 1 && !bottonSent) {
                     doc["bottonstatus"] = 1;

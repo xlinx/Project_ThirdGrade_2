@@ -26,8 +26,6 @@ const clients = new Map(); // 儲存客戶端連接的 Map
 let webID;
 
 
-//   res.send("hello songs")
-
 // API - HTTP 架構
 app.get("/api/songs", (req, res) => {
     // SQL 語句必須包含 SELECT 和 FROM
@@ -66,31 +64,6 @@ app.get("/api/songs", (req, res) => {
 server.on("connection" ,(ws) => {    // message
     console.log("New client");   
 
-    // const connID = uuid.v4(); // create唯一的連接 ID
-    //   clients.set(connID, ws); // 將連接存儲在 Map 中
-
-    //   // 印出目前總人數與所有 ID
-    // console.log(`connent count: ${clients.size}`);
-    // clients.forEach((_, key) => console.log(` - ${key}`)); // 印出所有連接的 ID
-
-    // // 重要：當客戶端斷線時，從 Map 中移除
-    // ws.on("close", () => {
-    //     clients.delete(connID);
-    //     console.log(`<<< disconnected: ${connID}`);
-    //     console.log(`connent count: ${clients.size}`);
-    // });
-
-    // // 每個客戶端連接時自動查詢 MySQL 並發送資料
-    // connection.query("SELECT * FROM baseTable", (err, results) => {  
-    //     if (err) {
-    //         console.error("Database query error:", err);
-    //         ws.send(JSON.stringify({ error: "Database query failed" }));
-    //         return;
-    //     }else {
-    //         console.log("Sending initial data from MySQL:", results);
-    //         ws.send(JSON.stringify(results));   
-    //     }
-    // });
       
     // 接收消息(從esp32))
     ws.on("message", (message) => {  
@@ -104,17 +77,6 @@ server.on("connection" ,(ws) => {    // message
       }
             
 
-      // if (testData.type === "Web") {
-      //     webID = ws;   //將ID儲存成一個變數
-      //     console.log(`註冊: ${connID}`);
-      //     ws.send(JSON.stringify({ msg: "註冊成功" }));
-      //     return; // 註冊訊息通常不需要廣播給別人
-      // }
-
-      // if (webID && webID.readyState === WebSocket.OPEN)
-      // {
-      //     webID.send(JSON.stringify(testData)); // 直接發送給註冊的 web 客戶端
-      // }
 
         // 向「所有客戶端」廣播角度
         server.clients.forEach((client) => {

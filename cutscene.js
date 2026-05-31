@@ -79,6 +79,7 @@ class cutsceneImg {
         rotate(radians(this.arcAngle));
         stroke(255);
         strokeWeight(2);
+        noFill();
         arc(0, 0, CONFIG.uslNoteSetting.judgeLine+25, CONFIG.uslNoteSetting.judgeLine+25, -PI, 0);
         arc(0, 0, CONFIG.uslNoteSetting.judgeLine+25, CONFIG.uslNoteSetting.judgeLine+25, PI, PI/2);
         
