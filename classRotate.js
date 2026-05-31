@@ -43,9 +43,8 @@ class Rotate {
         }
 
       
-        // 進入prefect判定區間
-        else if (this.notePosition <= CONFIG.uslNoteSetting.judgeLine + CONFIG.rotate.prefectRange
-          && this.notePosition >= CONFIG.uslNoteSetting.judgeLine - CONFIG.rotate.prefectRange)
+        // 進入prefect判定區間 (改為真正的「時間」判定，例如正負 120 毫秒內)
+        else if (Math.abs(time - this.triggerTime) <= CONFIG.rotate.prefectRange)
         {
           // 角度回傳為正 + 音符方向為正
           if (rotateInput === 1 && this.direction === 1) {
@@ -57,10 +56,8 @@ class Rotate {
           } 
         }
 
-
-        // 進入great判定區間
-        else if (this.notePosition <= CONFIG.uslNoteSetting.judgeLine + CONFIG.rotate.greatRange
-          && this.notePosition >= CONFIG.uslNoteSetting.judgeLine - CONFIG.rotate.greatRange)
+        // 進入great判定區間 (時間判定，例如正負 200 毫秒內)
+        else if (Math.abs(time - this.triggerTime) <= CONFIG.rotate.greatRange)
         {
           // 角度回傳為正 + 音符方向為正
           if (rotateInput === 1 && this.direction === 1) {
@@ -139,7 +136,7 @@ function getRotateJdgeAngle(time) {
   angleHistory.push({ time: now, angle: angleCount_360() });
 
   // 移除超過 100 毫秒以前的紀錄 (以 100ms 內的轉動量來判定)
-  while (angleHistory.length > 0 && now - angleHistory[0].time > 100) {
+  while (angleHistory.length > 0 && now - angleHistory[0].time > 70) {
     angleHistory.shift();
   }
 

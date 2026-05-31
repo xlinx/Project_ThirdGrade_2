@@ -6,7 +6,7 @@ class cutsceneText {
         this.centerAngle = random([0, 90 , 180 , 270]); // 隨機選擇旋轉中心角度（0 或 180 度）
         this.content = CONFIG.cutsceneText.obj[randomIndex].text; 
         this.textSize = CONFIG.cutsceneText.textSize;
-        this.radians = CONFIG.uslNoteSetting.judgeLine / 2 + 30; 
+        this.radians = CONFIG.uslNoteSetting.judgeLine / 2 + 100; 
     }
 
     display() {

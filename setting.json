@@ -25,18 +25,17 @@
     "strokeColorClockwise": [255, 30, 30],
     "strokeColorCounterClockwise": [50, 50, 255],
     "prefectRange": 90,
-    "greatRange": 130,
-    "judgeNeedAngle": 20
+    "greatRange": 150,
+    "judgeNeedAngle": 17
   },
   "uslNoteSetting": {
-    "speed": 13,
+    "speed": 14,
     "initialPosition":1080,
     "judgeLine": 600,
-    "judgeRange":10,
     "lifeLine": 530,
     "prefectRange": 16,
     "greatRange": 25,
-    "playerMarkSize": 15
+    "playerMarkSize": 16
   },
   "score": {
     "textSize": 32,
