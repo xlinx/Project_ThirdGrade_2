@@ -24,9 +24,10 @@
     "noteStrokeWeight": 5,
     "strokeColorClockwise": [255, 30, 30],
     "strokeColorCounterClockwise": [50, 50, 255],
-    "prefectRange": 90,
-    "greatRange": 150,
-    "judgeNeedAngle": 17
+    "prefectRange": 30,
+    "greatRange": 50,
+    "judgeNeedAngle": 7,
+    "judgeInterval":100
   },
   "uslNoteSetting": {
     "speed": 14,
@@ -44,7 +45,8 @@
     "great": 0,
     "miss": 0,
     "combo": 0,
-    "scoreTotal": 0
+    "scoreTotal": 0,
+    "hitRate": 0
   },
   "judgeText": {
     "textSize": 300,

@@ -118,17 +118,16 @@ function angleCount_360RL(){
 
 
 
-let isGet = false; 
 // 抓取歌曲清單==========================================================
 async function loadSongMenu() {
-    if (isGet) return; // 已經抓取過了就不再抓取
+    if (songList.length > 0) return; // 已經有歌曲就不再抓取
     try {
         // 發送 HTTP 請求
         const response = await fetch('http://localhost:3000/api/songs'); 
         const songs = await response.json(); // 拿到資料庫裡的陣列
-        isGet = true; // 設定已經抓取過了
 
         songs.forEach(data => {
+
             //建立歌曲物件，並存入 songList 陣列
             let newSong = new Song( data.id, 
                                     data.name, 

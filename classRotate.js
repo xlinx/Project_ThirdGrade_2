@@ -43,7 +43,7 @@ class Rotate {
         }
 
       
-        // 進入prefect判定區間 (改為真正的「時間」判定，例如正負 120 毫秒內)
+        // prefect判定區間 
         else if (Math.abs(time - this.triggerTime) <= CONFIG.rotate.prefectRange)
         {
           // 角度回傳為正 + 音符方向為正
@@ -56,8 +56,8 @@ class Rotate {
           } 
         }
 
-        // 進入great判定區間 (時間判定，例如正負 200 毫秒內)
-        else if (Math.abs(time - this.triggerTime) <= CONFIG.rotate.greatRange)
+        // great判定區間 
+        else if (time - this.triggerTime >= CONFIG.rotate.greatRange ) 
         {
           // 角度回傳為正 + 音符方向為正
           if (rotateInput === 1 && this.direction === 1) {
@@ -136,7 +136,7 @@ function getRotateJdgeAngle(time) {
   angleHistory.push({ time: now, angle: angleCount_360() });
 
   // 移除超過 100 毫秒以前的紀錄 (以 100ms 內的轉動量來判定)
-  while (angleHistory.length > 0 && now - angleHistory[0].time > 70) {
+  while (angleHistory.length > 0 && now - angleHistory[0].time > CONFIG.rotate.judgeInterval) {
     angleHistory.shift();
   }
 
@@ -145,7 +145,7 @@ function getRotateJdgeAngle(time) {
     let latest = angleHistory[angleHistory.length - 1];
     let diff = latest.angle - oldest.angle;
 
-    // 若 100ms 內角度變化(diff) >= 需要的角度，視為持續順時針轉
+    // 若 ms 內角度變化(diff) >= 需要的角度，視為持續順時針轉
     if (diff >= CONFIG.rotate.judgeNeedAngle) {
       return 1;
     } 

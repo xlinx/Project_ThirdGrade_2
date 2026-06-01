@@ -283,7 +283,7 @@ function selectSong() {
                 localAudio.loop = true; 
                 localAudio.volume = 0; // 初始化音量為 0，不直接殺出音樂
 
-                // 【核心修正】將設定時間改為安全秒數
+            
                 let startSeconds = currentSelectedSong.previewStartTime;
                 if (startSeconds > 1000) { 
                     startSeconds = startSeconds / 1000; // 如果誤填成毫秒 (10000)，自動修正為秒 (10秒)

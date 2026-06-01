@@ -22,6 +22,7 @@ let bgm1Obj; // 用來存放bgm1物件
 let selectEffect; // 用來存放選歌特效物件 
 let songJudgeText; // 用來存放歌曲判定文字物件
 let songComboText; // 用來存放歌曲combo文字物件
+let settlement;   // 用來存放結算物件
 
 
 let pass3_5Timer ; 
@@ -94,6 +95,9 @@ function draw() {
   if (status !== prevStatus) {
     // if (opObj) opObj.update(1);   
     if (bgm1Obj) bgm1Obj.update(3);   
+    if (status === 1) {
+      loadSongMenu(); // 確保只在狀態切換時呼叫一次，而不是每個 frame 呼叫
+    }
     prevStatus = status;
   }
 
@@ -124,7 +128,6 @@ if (isHitPressed) {
   if(status == 1){
     time = millis();
 
-    loadSongMenu();
     selectSong();
     playerMark();
     if (songList.length > 0) { 
@@ -217,10 +220,10 @@ pop();
 
     
   if(status == 3){
-
-    settlement();
+    drawSettlement();
     bgm1Obj.update(3);
     prevStatus = true;
+    cutscene();
   }
 
     // 在 draw() 的 status == 3.5 邏輯中修改

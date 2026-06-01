@@ -1,6 +1,68 @@
-function settlement() {
-    scoreDisplay();
 
+    //     stopRadius= CONFIG.pause.radius;
+
+    // // 讓 radiusAnima ++ CONFIG.pause.radius
+    // if (radiusAnima < CONFIG.pause.selectRadius) {
+    //     radiusAnima += (CONFIG.pause.selectRadius - radiusAnima) * 0.1;
+    // }
+class Settlement {
+  constructor() {
+    this.radius = 0; 
+  }
+
+  // centerAngleDegrees: 你希望這串文字「中心點」對齊的角度
+  display(str, radiansAngle, centerAngleDegrees, radius) {
+    this.radius = radius;
+    
+    let textString = String(str); 
+    let chars = textString.split(""); 
+    let count = chars.length;
+
+    let angleSpacing = radians(radiansAngle); 
+    
+    // 【核心邏輯】：計算這串字總共吃掉多少弧度
+    let totalAngleSpan = angleSpacing * (count - 1);
+    
+    // 【關鍵修正】：起始角度 = 目標中心角度 - 總弧度的一半
+    // 這樣整串字就會以中心點為軸心對稱展開！
+    let startAngle = radians(centerAngleDegrees) - (totalAngleSpan / 2);
+
+    push();
+    translate(width / 2, height / 2); 
+    
+    for (let i = 0; i < count; i++) {
+        let angle = startAngle + (i * angleSpacing); 
+        
+        let x = cos(angle) * this.radius; 
+        let y = sin(angle) * this.radius;
+
+        push();
+        translate(x, y);
+        rotate(angle + HALF_PI); 
+        textAlign(CENTER, CENTER);
+        textSize(40); 
+        noStroke();
+        fill(255, 255, 255); 
+        text(chars[i], 0, 0);
+        pop();
+    }
+    pop();
+  }
+}
+function drawSettlement() {
+    let settlement = new Settlement();
+    settlement.display("Score" , 4, 300,400);  
+    settlement.display(CONFIG.score.scoreTotal, 4, 300,350);  
+    
+    // settlement.display("Combo: " + CONFIG.score.combo, 4, 345);    
+    // settlement.display("Hit%: " + CONFIG.score.hitRate.toFixed(1) + "%", 4, 30); 
+    // settlement.display("Perfect: " + CONFIG.score.prefect, 4, 120); 
+    // settlement.display("Great: " + CONFIG.score.great, 4, 165);     
+    // settlement.display("Miss: " + CONFIG.score.miss, 4, 210);      
+}
+
+
+function cutscene() {
     if(botton === 1){
         // 回到選歌畫面
         status = 3.5;
