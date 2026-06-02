@@ -3,24 +3,31 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import {P5Canvas} from "@p5-wrapper/react";
+import {SketchX} from "./view/sketch/SketchX.js";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [count, setCount] = useState(0)
+    const [objFromp5, setobjFromp5] = useState({})
 
+    function callBack(objFromp5){
+      setobjFromp5(objFromp5);
+      // console.log("callBack",objFromp5);
+    }
   return (
     <>
       <section id="center">
         <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+
         </div>
         <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
+          <h1>ThirdGrade</h1>
         </div>
+          <P5Canvas
+              sketch={SketchX}
+              obj_input={{count}}
+              obj_output={callBack}
+          />
         <button
           type="button"
           className="counter"
@@ -28,6 +35,13 @@ function App() {
         >
           Count is {count}
         </button>
+          <button
+              type="button"
+              className="counter"
+              onClick={() => setCount((count) => count + 1)}
+          >
+              variable from p5 {objFromp5.angle}
+          </button>
       </section>
 
       <div className="ticks"></div>
