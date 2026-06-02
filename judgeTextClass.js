@@ -101,7 +101,7 @@ class SongJudgeText extends JudgeText {
             this.judgeText = "Perfect";
             break;
           case 2: 
-            this.judgeText = "Good";
+            this.judgeText = "Great";
             break;
           case 3: 
             this.judgeText = "Miss";

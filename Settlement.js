@@ -5,280 +5,224 @@
     // if (radiusAnima < CONFIG.pause.selectRadius) {
     //     radiusAnima += (CONFIG.pause.selectRadius - radiusAnima) * 0.1;
     // }
-class Settlement {
+
+    // 極座標
+    //每個文字在畫面上對齊圓周的 $(x, y)$ 座標是由極座標公式轉換
+    // X = certerX + cos(angle) * radius
+    // Y = certerY + sin(angle) * radius
+    // 其中 angle 是每個文字的角度位置，radius 是文字距離圓心的距離
+
+    // easing 公式
+    //Vnext = Vcurrent + (Vtarget - Vcurrent) * easingFactor
+
+
+// ==================== 【優化 1】將實例與變數移至全域 ====================
+let mySettlement = null;
+let cachedSettlementImg = null; // 用來儲存只裁切一次的結算圖片
+let isSettlementImgPrepared = false; 
+
+class Settlement extends Song {
   constructor() {
-    this.radius = 0; 
+    super();
+    this.valueProgress = {};  // 1. 數字動畫倉庫
+    this.radiusProgress = {}; // 2. 半徑動畫倉庫
   }
 
-  // centerAngleDegrees: 你希望這串文字「中心點」對齊的角度
-  display(str, radiansAngle, centerAngleDegrees, radius) {
-    this.radius = radius;
-    
-    let textString = String(str); 
+  display(str, radiansAngle, centerAngleDegrees, radius, textSizeValue, alpha) {
+    // ================== 數字動畫處理 ==================
+    let finalDisplayStr = str;
+    if (typeof str === "number") {
+        let numKey = centerAngleDegrees + "_" + radius; // Key
+        if (this.valueProgress[numKey] === undefined) this.valueProgress[numKey] = 0;
+        
+        if (this.valueProgress[numKey] < str) {
+            this.valueProgress[numKey] += (str - this.valueProgress[numKey]) * 0.01;
+        } else {
+            this.valueProgress[numKey] = str;
+        }
+        finalDisplayStr = Math.round(this.valueProgress[numKey]);
+    }
+
+    // ================== 半徑動畫處理 ==================
+    if (this.radiusProgress[radius] === undefined) {
+        this.radiusProgress[radius] = 0;
+    }
+    if (this.radiusProgress[radius] < radius) {
+        this.radiusProgress[radius] += (radius - this.radiusProgress[radius]) * 0.01;
+    } else {
+        this.radiusProgress[radius] = radius; 
+    }
+    let currentAnimRadius = this.radiusProgress[radius];
+
+    // ================== 畫字邏輯 ==================
+    let textString = String(finalDisplayStr); 
     let chars = textString.split(""); 
     let count = chars.length;
-
     let angleSpacing = radians(radiansAngle); 
-    
-    // 【核心邏輯】：計算這串字總共吃掉多少弧度
     let totalAngleSpan = angleSpacing * (count - 1);
-    
-    // 【關鍵修正】：起始角度 = 目標中心角度 - 總弧度的一半
-    // 這樣整串字就會以中心點為軸心對稱展開！
     let startAngle = radians(centerAngleDegrees) - (totalAngleSpan / 2);
 
     push();
     translate(width / 2, height / 2); 
-    
+    textAlign(CENTER, CENTER);
+    textSize(textSizeValue); 
+    noStroke();
+    fill(255, alpha); 
+
+    // 極座標轉換
     for (let i = 0; i < count; i++) {
         let angle = startAngle + (i * angleSpacing); 
-        
-        let x = cos(angle) * this.radius; 
-        let y = sin(angle) * this.radius;
-
+        let x = cos(angle) * currentAnimRadius; 
+        let y = sin(angle) * currentAnimRadius;
         push();
         translate(x, y);
         rotate(angle + HALF_PI); 
-        textAlign(CENTER, CENTER);
-        textSize(40); 
-        noStroke();
-        fill(255, 255, 255); 
         text(chars[i], 0, 0);
         pop();
     }
     pop();
   }
-}
-function drawSettlement() {
-    let settlement = new Settlement();
-    settlement.display("Score" , 4, 300,400);  
-    settlement.display(CONFIG.score.scoreTotal, 4, 300,350);  
-    
-    // settlement.display("Combo: " + CONFIG.score.combo, 4, 345);    
-    // settlement.display("Hit%: " + CONFIG.score.hitRate.toFixed(1) + "%", 4, 30); 
-    // settlement.display("Perfect: " + CONFIG.score.prefect, 4, 120); 
-    // settlement.display("Great: " + CONFIG.score.great, 4, 165);     
-    // settlement.display("Miss: " + CONFIG.score.miss, 4, 210);      
+
+  // 這樣一來，重置按鈕也超級好寫，直接清空物件內部的兩個倉庫就好
+  reset() {
+    this.valueProgress = {};
+    this.radiusProgress = {};
+  }
 }
 
+// ==================== 【優化 2】遮罩一輩子只需要做一次 ====================
+function prepareMaskedSettlementImage() {
+    if (!img || isSettlementImgPrepared) return;
 
-function cutscene() {
-    if(botton === 1){
-        // 回到選歌畫面
-        status = 3.5;
-        selectedSongIndex = -1;
-
-        angleHistory = [];
-    }
-
-}
-
-let radiusAnima = 0; 
-let angValue = 0; 
-let imgAngValue = 0; 
-let arcAngValue = 0; // 用於控制裝飾弧線旋轉的變量
-let maskedImg = null; // 用來儲存裁切後的圖片
-let stopRadius ;
-
-// 專門處理圖片遮罩，只需在暫停那一刻執行一次
-function prepareMaskedImage() {
-    let r = CONFIG.pause.radius;
+    let r = CONFIG.settlement.SongImgRadius;
     let maskImg = createGraphics(r, r);
     maskImg.fill(255);
     maskImg.noStroke();
     maskImg.circle(r / 2, r / 2, r);
 
-    maskedImg = img.get();
-    maskedImg.mask(maskImg);
-    maskImg.remove();
+    cachedSettlementImg = img.get(); 
+    cachedSettlementImg.mask(maskImg);
+    maskImg.remove(); // 釋放記憶體
+    
+    isSettlementImgPrepared = true; // 鎖定，下次直接跳過不執行
 }
 
-function pause() {
-    let currentDeg = angleCount_360L(); 
-
-    // 1. 處理暫停邏輯 (僅在切換狀態時執行)
-    if (song && !song.paused) {
-        prepareMaskedImage();
-        song.pause();
-        stopRadius= CONFIG.pause.radius;
-        radiusAnima = 0;
-    }
-
-    // --- 背景層 (靜止) ---
-    // push();
-    //     rectMode(CENTER);
-    //     fill(255, 100);
-    //     noStroke();
-    //     rect(CONFIG.pause.selectDistance, 0, CONFIG.pause.selectWidth, CONFIG.pause.selectHeight);
-    //     rect(-CONFIG.pause.selectDistance, 0, CONFIG.pause.selectWidth, CONFIG.pause.selectHeight);
-    // pop();
-
-    // 左圓
-push();
-    translate(width / 2 , height/2);
-    noStroke();
-    if(currentDeg > 90 && currentDeg <= 270){
-        fill(233,208,194);
-    } else {
-        fill(100,100,100);
-    }
-
-    // 讓 radiusAnima ++ CONFIG.pause.radius
-    if (radiusAnima < CONFIG.pause.selectRadius) {
-        radiusAnima += (CONFIG.pause.selectRadius - radiusAnima) * 0.1;
-    }
 
 
-    arc(0, 0, radiusAnima, radiusAnima, HALF_PI, PI + HALF_PI);
-// 右圓
-    if(currentDeg > 0 && currentDeg <= 90 || currentDeg > 270 && currentDeg <= 360){
-        fill(233,208,194);
-    } else {
-        fill(100,100,100);
-    }
-    arc(0, 0, radiusAnima, radiusAnima, -HALF_PI , HALF_PI);
-//中間遮罩
-    fill(0);
-    circle(0, 0, CONFIG.pause.selectRadiusMask);
-    rectMode(CENTER);
-    rect(0, 0, 100, width);
-//裝飾弧
-    rotate(radians(arcAngValue));
-    arcAngValue += 0.2;
-    noFill();
-    strokeWeight(2);
-    stroke(255);
-    arc(0, 0, radiusAnima + 30, radiusAnima + 30, radians(20), radians(160));
-    arc(0, 0, radiusAnima + 30, radiusAnima + 30, radians(200), radians(340));
+// 圖片
+function drawSettlementImage() {
+    if (!cachedSettlementImg) return;
+    let r = CONFIG.settlement.SongImgRadius;
 
-pop();
-
-
-    // 旋轉
     push();
-
-        if(currentDeg > 250 && currentDeg < 280){
-            stopRadius += ((CONFIG.pause.radius + 100) - stopRadius) * 0.1;
-        }else{
-            stopRadius += (CONFIG.pause.radius - stopRadius) * 0.1;
-        }
-        translate(width / 2, CONFIG.pause.position);
+        translate(width / 2, height / 2 - r); 
+        rotate(radians(angValue * 0.3));
         
-        // A. 基礎外圈旋轉
-        rotate(radians(angValue));
-        angValue += CONFIG.pause.rotateSpeed;
-
-        // 底圓
+        // 畫黑底圓圈
         fill(0);
         noStroke();
-        circle(0 ,0 ,stopRadius + 10);
+        drawingContext.shadowBlur = 20; 
+        drawingContext.shadowColor = `rgb(255, 255, 255, 0.5)`;
+        circle(0, 0, r + 20); 
+        
+        drawingContext.shadowBlur = 0;
+        imageMode(CENTER);
+        image(cachedSettlementImg, 0, 0, r, r);
+    pop();
+}
 
-        // B. 圖片旋轉 
-        push();
-            rotate(radians(imgAngValue));
-            imgAngValue -= CONFIG.pause.imgRotateSpeed;
-            imageMode(CENTER);
-            if (maskedImg) {
-                image(maskedImg ,0 ,0 , stopRadius, stopRadius);
-            }
-        pop();
+// 底圓
+function settlementBottonCircle(){
+    push();
+        noStroke();
+        translate(width / 2, height / 2);
+        fill`rgb(48, 52, 55)`;
+        circle(0, 0, CONFIG.pause.selectRadius + 100);
+        fill(0);
+        circle(0, 0, CONFIG.pause.selectRadius - 200);
+    pop();
+}
 
-        // C. 裝飾弧線 (跟隨基礎外圈旋轉)
+// 大裝飾弧線
+function settlementBigDecorateArc(){
+    push();
         noFill();
-        strokeWeight(1);
-        stroke(255, 200);
-        let arcSize = stopRadius + 30;
+        stroke(255);
+        strokeWeight(2);
+        translate(width / 2, height / 2);
+        rotate(radians(angValue * 0.6));
+        let arcSize = CONFIG.settlement.SongImgRadius * 3.1;
         arc(0, 0, arcSize, arcSize, radians(20), radians(160));
         arc(0, 0, arcSize, arcSize, radians(200), radians(340));
-
-        // D. 中心裝飾圓
-            strokeWeight(0.5);
-            stroke(0);
-            fill(100);
-            circle(0 ,0 ,stopRadius - 250);
-            fill(0);
-            noStroke();
-            circle(0 ,0 ,stopRadius - 260);
     pop();
-
-    // --- 文字層 (靜止) ---
-    stopSelectText();
-
-    playerMark();
-
-    if (backToMenu() && botton === 1) {
-        selectedSongIndex = -1;
-
-        if (pass3_5Timer.upDate(CONFIG.pause.pauseToSelectDuring)) {
-        // --- 修正處：進入 status 1 前的大掃除 ---
-        status = 1;
-        hasInitializedMenu = false; // 告訴 selectSong 需要重新初始化
-        // ------------------------------------
-        CutsceneText = []; 
-        CutsceneImg = [];
-        isLoad = false;
-    }
-
-        botton = 0; // 重置按鈕
-    }else if (backGame() && botton === 1) {
-        status = 2;
-        botton = 0; // 重置按鈕
-    }
-
- 
 }
 
-
-
-
-function backToMenu(){
-    if(angleCount_360L() > 90 && angleCount_360L() <= 270){
-        return true;
-    }
-}
-
-function backGame(){
-    if((angleCount_360L() >= 0 && angleCount_360L() <= 90) || (angleCount_360L() > 270 && angleCount_360L() <= 360)){
-        return true;
-    }
-    return false;
-}
-
-
-function stopSelectText() {
-    let r = radiusAnima / 2 - CONFIG.pause.selectRadiusTextDeValue;
-    let totalAngle = radians(40); // 每個單字的展開弧度
-    
-    // 呼叫兩次輔助函式，分別處理左邊和右邊
-    drawArcText("MENU", PI, r, totalAngle);   // 在左邊 (180度)
-    drawArcText("RESUME", 0, r, totalAngle);  // 在右邊 (0度)
-}
-
-// 這是輔助函式，負責執行重複的繪製動作
-function drawArcText(str, centerAngle, r, totalAngle) {
+// 小裝飾弧線
+function settlementSmallDecorateArc(){
     push();
-    translate(width / 2, height / 2);
-    
-    // 計算起始角度：中心點角度 - (總角度的一半)，確保單字居中
-    let startAngle = centerAngle - (totalAngle / 2);
-
-    textAlign(CENTER, CENTER);
-    fill(255);
-    noStroke();
-    textSize(CONFIG.pause.textSize);
-
-    for (let i = 0; i < str.length; i++) {
-        // 計算每個字母的角度位置
-        let charAngle = startAngle + (i / (str.length - 1)) * totalAngle;
-
-        push();
-            // 旋轉到該字母的角度
-            rotate(charAngle + HALF_PI); 
-            // 移動到指定半徑
-            translate(0, -r); 
-            
-            text(str[i], 0, 0);
-        pop();
-    }
+        noFill();
+        stroke(255);
+        strokeWeight(1);
+        translate(width / 2, height / 2 - CONFIG.settlement.SongImgRadius);
+        rotate(radians(angValue));
+        let arcSize = CONFIG.settlement.SongImgRadius + 40;
+        arc(0, 0, arcSize, arcSize, radians(20), radians(160));
+        arc(0, 0, arcSize, arcSize, radians(200), radians(340));
     pop();
 }
+
+
+// 分數顯示
+function drawSettlement() {
+    // 如果實例不存在才創建（只會執行一次）
+    if (!mySettlement) {
+        mySettlement = new Settlement();
+    }
+    
+    // 預先處理遮罩（內部有鎖，只有進結算第一幀會真正跑像素計算）
+    prepareMaskedSettlementImage(); 
+    
+    scoreDisplay(); 
+    
+    push();
+    textStyle(BOLD);
+    angValue += CONFIG.pause.rotateSpeed; 
+
+    settlementBottonCircle(); // 底圓
+
+    // 歌曲名稱
+    mySettlement.display(songName, 7, angValue * 0.4, CONFIG.settlement.SongImgRadius, 30);  
+    mySettlement.display(songName, 7, angValue * 0.4 + 180, CONFIG.settlement.SongImgRadius, 30);  
+    pop();
+
+    settlementBigDecorateArc();  // 大裝飾弧
+    drawSettlementImage();        // 【優化】直接繪製快取好的一般圖片，FPS 直接拉滿！
+    settlementSmallDecorateArc(); // 小裝飾弧
+
+    // 分數資料 (半徑 350 組)
+    textStyle(BOLD);
+    textFont('Montserrat');
+    mySettlement.display(CONFIG.score.scoreTotal, 5, 330, 350, 40, 255);   
+    mySettlement.display(CONFIG.score.hitRate.toFixed(0) + "%", 5, 30, 350, 40, 255); 
+    mySettlement.display(CONFIG.score.prefect, 5, 140, 350, 40, 255); 
+    mySettlement.display(CONFIG.score.great, 5, 180, 350, 40, 255); 
+    mySettlement.display(CONFIG.score.miss, 5, 220, 350, 40, 255);   
+    
+    // 標題項目 (半徑 400 組)
+    textStyle(NORMAL);
+    textFont('Montserrat');
+    mySettlement.display("SCORE", 5, 330, 400, 40, 150); 
+    mySettlement.display("HIT%", 5, 30, 400, 40, 150); 
+    mySettlement.display("PERFECT", 5, 140, 400, 40, 150);
+    mySettlement.display("GREAT", 5, 180, 400, 40, 150);
+    mySettlement.display("MISS", 5, 220, 400, 40, 150);   
+}
+
+function easingSettlementScore(current, target, factor) {
+    return current + (target - current) * factor;
+}
+
+
+
+
+

@@ -85,24 +85,30 @@
     "textColor": [255, 255, 255],
     "pauseToSelectDuring": 200
   },
+  "settlement": {
+    "textSize": 32,
+    "textColor": [255, 255, 255],
+    "SongImgRadius" : 300,
+    "SongImgYOffset" : 700
+  },
+  "gameEffect": {
+   "rotationSpeed":0.4
+  },
   "cutsceneText": {
     "textSize": 32,
     "textColor": [255, 255, 255],
     "duration": 5000,
     "rotationSpeed": 0.5,
+    "radius": 720,
     "obj":[ 
-      {"text": "這是一個關於音樂的故事"},
-      {"text": "在一個充滿旋律的世界裡"},
-      {"text": "有一位熱愛三軸的少年"},
-      {"text": "他夢想成為一名偉大的？？？"},
-      {"text": "他每天都在練習和創作"},
-      {"text": "終於有一天，他遇到了一位神秘的AI"},
-      {"text": "世界教會了他許多關於時間的秘密"},
-      {"text": "從此，他的專題之路變得更加精彩"},
-      {"text": "你知道音遊社這禮拜有活動嗎？"}
+      {"text": "拉長耳朵，提高警覺，神經細胞，全面戒備"},
+      {"text": "人類的能力是有極限的，我從這短暫的人生中學到一間事情"},
+      {"text": "我不做專題了！JOJO！"},
+      {"text": "你畢製場地期望在哪裡呢？聽說好多人想 CLAB"},
+      {"text": "你知道音遊社這禮拜有活動嗎？ 就在明天6/5"}
     ]
   },
   "websocket": {
-    "serverAddress": "ws://127.0.0.1:8080"
+    "serverAddress": "ws://192.168.137.1:8080"
   }
 }

@@ -17,12 +17,14 @@ let cutsceneImgsList = []; // 用來存放從 過場圖片資料的陣列
 let Notes = []; // 用來存放所有音符的陣列
 let Drags = []; // 用來存放所有拖曳音符的陣列
 let Rotates = []; // 用來存放所有旋轉音符的陣列
+let songName = ""; // 用來存放當前歌曲名稱的變數
 let opObj ; // 用來存放op物件
 let bgm1Obj; // 用來存放bgm1物件
 let selectEffect; // 用來存放選歌特效物件 
 let songJudgeText; // 用來存放歌曲判定文字物件
 let songComboText; // 用來存放歌曲combo文字物件
 let settlement;   // 用來存放結算物件
+let gameEffect;   // 用來存放遊戲效果物件
 
 
 let pass3_5Timer ; 
@@ -54,6 +56,7 @@ let nowTime = 0; // 用來存放當前時間的值
 
 function setup() {
   createCanvas(CONFIG.canvas.width, CONFIG.canvas.height);
+  noCursor();
   CSVData = getCSVData();
   websocketSetup(); // 初始化 WebSocket 連線
 
@@ -82,6 +85,7 @@ bgm1Obj = new Bgm1Obj(); // 初始化bgm1物件
 selectEffect = new SelectEffect(); // 初始化選歌特效物件
 songJudgeText = new SongJudgeText(); // 初始化歌曲判定文字物件
 songComboText = new SongComboText(); // 初始化歌曲combo文字物件
+gameEffect = new GameEffect(); // 初始化遊戲效果物件
 }
 
 
@@ -136,7 +140,8 @@ if (isHitPressed) {
         }
     }
     drawSongMenu( CONFIG.songSelectMenu.songPage, CONFIG.songSelectMenu.songQuantity);
-    //  opObj.update(1);
+
+    gameEffect.resetGameEffect(); // 重置遊戲效果的淡入狀態，為下一次進入做準備
   }
 
   if(status == 2 || status == 2.5){
@@ -145,7 +150,10 @@ if (isHitPressed) {
     
     if (!isplaying && song && status !== 2.5) {
         song.play();
+        settlementRadiusAnima = {}; // 重製結算頁面動畫的半徑變量
         isplaying = true;
+
+        settlement.reset(); 
     }
 
      if (song && !song.paused) {
@@ -157,13 +165,8 @@ if (isHitPressed) {
       botton = 0; // 立即消耗按鈕狀態，防止同一幀內觸發 pause() 的選項
     }
 
-      // textSize(30);
-      // fill(0);
-      // text(time ,100 ,200);
-      // textSize(50);
-      // text(angleCount_360() ,100 ,400);
-      // text(angleCount_360L() ,100 ,500);
-      // text(angleCount_360RL() ,100 ,600);
+    
+    gameEffect.maskedGameImage(); // 顯示遊戲底圖
 
 push();
       noFill();
@@ -211,7 +214,9 @@ push();
         Rotates[i].display();
       }
     }
+    
 pop();
+
   }
 
   if (song && song.paused && status == 2){

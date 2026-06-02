@@ -344,11 +344,12 @@ function selectSong() {
         botton = 0; 
 
         if (selectedSongIndex !== -1) {
-            let targetSong = songList[selectedSongIndex];
+            let targetSong = songList[selectedSongIndex]; // 取得被選中的歌曲物件
             targetSong.update();
             
             table = targetSong.csv;
             img = targetSong.jpg;  
+            songName = targetSong.name;
             Notes = []; Drags = []; Rotates = [];
             
             CSVData = getCSVData();

@@ -71,7 +71,7 @@ class cutsceneImg {
         imageMode(CENTER);
         
         tint(255); 
-        image(this.maskedImg, 0, 0, CONFIG.uslNoteSetting.judgeLine, CONFIG.uslNoteSetting.judgeLine); 
+        image(this.maskedImg, 0, 0, CONFIG.cutsceneText.radius, CONFIG.cutsceneText.radius); 
         
         CutsceneText[0].display(); 
 
@@ -80,15 +80,27 @@ class cutsceneImg {
         stroke(255);
         strokeWeight(2);
         noFill();
-        arc(0, 0, CONFIG.uslNoteSetting.judgeLine+25, CONFIG.uslNoteSetting.judgeLine+25, -PI, 0);
-        arc(0, 0, CONFIG.uslNoteSetting.judgeLine+25, CONFIG.uslNoteSetting.judgeLine+25, PI, PI/2);
+        arc(0, 0, CONFIG.cutsceneText.radius+25, CONFIG.cutsceneText.radius+25, -PI, 0);
+        arc(0, 0, CONFIG.cutsceneText.radius+25, CONFIG.cutsceneText.radius+25, PI, PI/2);
         
         noStroke();
-        fill(0, this.opacity);
-        circle(0, 0, CONFIG.uslNoteSetting.initialPosition);
+        fill(0, this.opacity); // 設定填色為黑色並附帶透明度
+        rectMode(CENTER);
+        rect(0, 0, width * 2, height * 2);
         pop();
         
     }
+}
+
+function cutscene() {
+    if(botton === 1){
+        // 回到選歌畫面
+        status = 3.5;
+        selectedSongIndex = -1;
+
+        angleHistory = [];
+    }
+
 }
 
 
