@@ -2,7 +2,8 @@
 
 // 底圖片/遮罩
 class GameEffect {
-    constructor() {
+    constructor(config) {
+        this.config=config
         this.maskImg = null; // 遊戲底圖遮罩
         this.initGameMaskAlpha = 255; 
         this.angValue = 0; // 用於控制旋轉的變量
@@ -15,7 +16,7 @@ class GameEffect {
 
     update(){
             if (img && status === 2) {
-                this.angValue -= CONFIG.gameEffect.rotationSpeed*0.4; // 旋轉速度
+                this.angValue -= this.config.gameEffect.rotationSpeed*0.4; // 旋轉速度
                 rectMode(CENTER);
                 this.initGameMaskAlpha -= 255 * 0.005; // 逐漸淡出
                 fill(0, this.initGameMaskAlpha);
