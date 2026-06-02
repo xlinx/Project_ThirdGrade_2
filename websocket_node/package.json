@@ -1,5 +1,10 @@
 {
   "type": "module",
+  "scripts": {
+    "dev": "node app.js",
+    "build": "npm build"
+
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "express": "^5.2.1",

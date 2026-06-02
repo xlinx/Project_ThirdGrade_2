@@ -1,0 +1,114 @@
+{
+  "title": "",
+  "version": "1.0.0",
+  "canvas": {
+    "width": 1580,
+    "height": 1080
+  },
+  "display": {
+    "frameRate": 60,
+    "backgroundColor": [0, 0, 0]
+  },
+  "note": {
+    "arcWidthValue": 10,
+    "noteStrokeWeight": 10,
+    "judgeAllowAngle": 5,
+    "strokeColor": [255, 255, 255]
+  },
+  "drag": {
+    "noteStrokeWeight": 10,
+    "density": 10,
+    "strokeColor": [255, 255, 255]
+  },
+  "rotate": {
+    "noteStrokeWeight": 5,
+    "strokeColorClockwise": [255, 30, 30],
+    "strokeColorCounterClockwise": [50, 50, 255],
+    "prefectRange": 30,
+    "greatRange": 50,
+    "judgeNeedAngle": 7,
+    "judgeInterval":100
+  },
+  "uslNoteSetting": {
+    "speed": 14,
+    "initialPosition":1080,
+    "judgeLine": 600,
+    "lifeLine": 530,
+    "prefectRange": 16,
+    "greatRange": 25,
+    "playerMarkSize": 16
+  },
+  "score": {
+    "textSize": 32,
+    "textColor": [255, 255, 255],
+    "prefect": 0,
+    "great": 0,
+    "miss": 0,
+    "combo": 0,
+    "scoreTotal": 0,
+    "hitRate": 0
+  },
+  "judgeText": {
+    "textSize": 300,
+    "hitColor": [255, 255, 255],
+    "perfectColor": [255, 235, 59],
+    "goodColor": [76, 175, 80],
+    "missColor": [244, 67, 54],
+    "duration": 700
+  },
+  "songSelectMenu": {
+    "songPage": 0,
+    "songQuantity": 8,
+    "songbuttonWidth": 190,
+    "songListRadius": 300,
+    "arcRadius": 1000,
+    "selectSongRotateSpeed": 0.2,
+    "selectSongAngle": 0,
+    "buttonColor": [0, 0, 255],
+    "textSize": 24,
+    "textColor": [255, 255, 255],
+    "speedE" : 0.4,
+    "topicTextE"  : "CYCOTATION",
+    "arcRadiusE": 900,
+    "targetPreviewVolume": 0.6,
+    "fadeDuration": 1000
+  },
+  "pause": {
+    "rotateSpeed": 0.6,
+    "imgRotateSpeed": 0.4,
+    "selectRadius": 800,
+    "selectRadiusMask": 600,
+    "selectRadiusTextDeValue": 55,
+    "radius": 300,
+    "position":200,
+    "textSize": 50,
+    "textColor": [255, 255, 255],
+    "pauseToSelectDuring": 200
+  },
+  "settlement": {
+    "textSize": 32,
+    "textColor": [255, 255, 255],
+    "SongImgRadius" : 300,
+    "SongImgYOffset" : 700
+  },
+  "gameEffect": {
+   "rotationSpeed":0.4
+  },
+  "cutsceneText": {
+    "textSize": 32,
+    "textColor": [255, 255, 255],
+    "duration": 5000,
+    "rotationSpeed": 0.5,
+    "radius": 720,
+    "obj":[ 
+      {"text": "拉長耳朵，提高警覺，神經細胞，全面戒備"},
+      {"text": "人類的能力是有極限的，我從這短暫的人生中學到一間事情"},
+      {"text": "我不做專題了！JOJO！"},
+      {"text": "你畢製場地期望在哪裡呢？聽說好多人想 CLAB"},
+      {"text": "你知道音遊社這禮拜有活動嗎？ 就在明天6/5"}
+    ]
+  },
+  "websocket": {
+    "serverAddress": "ws://192.168.137.1:8080"
+  }
+}
